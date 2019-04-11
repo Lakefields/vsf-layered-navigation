@@ -40,7 +40,6 @@ export function findConfigurableChildAsync ({ product, configuration = null, sel
       return configurableChild.sku === configuration.sku // by sku or first one
     } else {
       return Object.keys(omit(configuration, ['price'])).every((configProperty) => {
-        console.log('zo dan!')
         if (isArray(configuration[configProperty])) {
           return (configuration[configProperty].filter(option => toString(option.id) === toString(configurableChild[configProperty])).length !== 0)
         } else {

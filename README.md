@@ -6,9 +6,13 @@ Multiselect filters in Vue Storefront with Price Slider
 ![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/55967046-e425ee00-5c79-11e9-9113-d4f6b0fce609.png)
 
 # Support
-This module is build to enable multiple filter options per attribute in mind.
+This module is built to enable multiple filter options per attribute in mind.
 Use at your own responsibility in your project. This module is tested on Vue Storefront 1.9.
 For any support installing, using or request features for this module in Vue Storefront, please contact us at http://www.getnoticed.nl/contact
+
+# Puprpose
+We created this module to make searching the catalog a better experience, there are a lot more features to come and we'll add these features to this module when we finished development on them.
+Are you missing feature you need right now, please feel free to contact us of open a pull request of course.
 
 # Installation
 Clone this git repository and add config properties to your local.json config file.

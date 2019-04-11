@@ -92,6 +92,5 @@ export default {
 <style lang="scss">
 .vue-slider-component .vue-slider-dot {
   box-shadow: none;
-  border: 1px solid #ddd;
 }
 </style>

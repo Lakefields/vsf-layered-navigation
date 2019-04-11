@@ -34,6 +34,8 @@ This is experimental, with the 'productsleftcounter' enabled, the results of a f
 
 This can result in a performance hit with large productlists, keep this in mind.
 
+**NB**: Only supports Simple products only right now, we are working on a solution to include support for configurable products also. For now, set the config property `enableProductsLeftCounter` to false. 
+
 To take full advantage of this layered navigation module, please run the indexing for your catalog including these changes in Mage2Vuestorefront https://github.com/DivanteLtd/mage2vuestorefront/pull/70
 
 # Module registration - extend catalog core module

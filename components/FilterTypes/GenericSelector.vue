@@ -23,9 +23,12 @@ export default {
   $color-disabled: color(secondary, $colors-border);
 
   .generic-selector {
-    height: 40px;
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
     padding-left: 8px;
     padding-right: 8px;
+    margin-right: 5px;
 
     &:hover,
     &:focus {

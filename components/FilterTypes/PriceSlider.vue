@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="price-slider-container">
     <no-ssr placeholder="loading..." placeholader-tag="span">
       <vue-slider
         v-model="value"
@@ -68,6 +68,10 @@ export default {
   @import '~theme/css/helpers/functions/color';
   $color-event: color(tertiary);
   $color-active: color(accent);
+
+  .price-slider-container {
+    padding-bottom: 50px;
+  }
 
   .price-selector {
     width: 20px;

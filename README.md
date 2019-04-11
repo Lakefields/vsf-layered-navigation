@@ -21,11 +21,14 @@ git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git vue-storefront/
 },
 ```
 
-For the multiselect attributes from Magento 2 to work as multiple filters, please run the indexing for your catalog including these changes in Mage2Vuestorefront `https://github.com/DivanteLtd/mage2vuestorefront/pull/69`
+To take full advantage of this layered navigation module, please run the indexing for your catalog including these changes in Mage2Vuestorefront https://github.com/DivanteLtd/mage2vuestorefront/pull/70
 
 # Module registeration - extend catalog core module
 Open `src/modules/index.ts`
+
 Uncomment `import { extendModule } from '@vue-storefront/core/lib/module'`
+
+And add:
 
 ```js
 ...

@@ -49,7 +49,6 @@ const catalogProductExtendedModule = {
               product.sku = product.configurable_children[0].sku
             }
             if (configuration) {
-              console.log("jamaa, deze dan, ja deze ja!!!!")
               let selectedVariant = configureProductAsync(context, { product: product, configuration: configuration, selectDefaultVariant: false })
               Object.assign(product, selectedVariant)
             }

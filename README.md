@@ -1,5 +1,5 @@
 # Layered Navigation Module
-Multiselect filters in Vue Storefront
+Multiselect filters in Vue Storefront with Price Slider
 
 # Support
 This module is build to enable multiple filter options per attribute in mind.

@@ -32,8 +32,7 @@ git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git src/modules/lay
 # Module registration - extend catalog core module
 Open `src/modules/index.ts`
 
-**Start with**
-Uncomment `import { extendModule } from '@vue-storefront/core/lib/module'`
+**Start with** uncommenting `import { extendModule } from '@vue-storefront/core/lib/module'`
 
 And add:
 

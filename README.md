@@ -21,6 +21,10 @@ git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git vue-storefront/
 },
 ```
 
+This is experimental, with the 'productsleftcounter' enabled, the results of a filteroption is added in the filters sidebar. If the filter option should result in an empty product list, the filter option is faded and not clickable.
+
+This can result in a performance hit with large productlists, keep this in mind.
+
 To take full advantage of this layered navigation module, please run the indexing for your catalog including these changes in Mage2Vuestorefront https://github.com/DivanteLtd/mage2vuestorefront/pull/70
 
 # Module registeration - extend catalog core module

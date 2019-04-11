@@ -1,0 +1,10 @@
+{
+  "name": "@getnoticed/layeredNavigationModule",
+  "version": "1.0.0-rc.0",
+  "description": "Layered Navigation module for VSF 1.8",
+  "author": "Get.Noticed",
+  "license": "MIT",
+  "dependencies": {
+    "vue-slider-component": "^2.8.10"
+  }
+}

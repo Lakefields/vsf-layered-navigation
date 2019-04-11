@@ -1,0 +1,198 @@
+import Vue from 'vue'
+import rootStore from '@vue-storefront/core/store'
+import i18n from '@vue-storefront/i18n'
+import chunk from 'lodash-es/chunk'
+import trim from 'lodash-es/trim'
+import toString from 'lodash-es/toString'
+import { optionLabel } from '@vue-storefront/core/modules/catalog/helpers/optionLabel'
+import { currentStoreView } from '@vue-storefront/core/lib/multistore'
+
+export interface Attribute {
+  attribute_id: number,
+  attribute_code: string,
+  frontend_input: string,
+  is_visible: boolean,
+  is_visible_on_front: number,
+  options: any
+}
+
+const catalogCategoryExtendedModule = {
+  actions: {
+    products (context, { populateAggregations = false, filters = [], searchProductQuery, current = 0, perPage = 50, sort = '', includeFields = null, excludeFields = null, configuration = null, append = false, skipCache = false }) {
+      context.dispatch('setSearchOptions', {
+        populateAggregations,
+        filters,
+        current,
+        perPage,
+        includeFields,
+        excludeFields,
+        configuration,
+        append,
+        sort
+      })
+  
+      let prefetchGroupProducts = true
+      if (rootStore.state.config.entities.twoStageCaching && rootStore.state.config.entities.optimize && !Vue.prototype.$isServer && !rootStore.state.twoStageCachingDisabled) { // only client side, only when two stage caching enabled
+        includeFields = rootStore.state.config.entities.productListWithChildren.includeFields // we need configurable_children for filters to work
+        excludeFields = rootStore.state.config.entities.productListWithChildren.excludeFields
+        prefetchGroupProducts = false
+        console.log('Using two stage caching for performance optimization - executing first stage product pre-fetching')
+      } else {
+        prefetchGroupProducts = true
+        if (rootStore.state.twoStageCachingDisabled) {
+          console.log('Two stage caching is disabled runtime because of no performance gain')
+        } else {
+          console.log('Two stage caching is disabled by the config')
+        }
+      }
+      let t0 = new Date().getTime()
+  
+      const precachedQuery = searchProductQuery
+      let productPromise = rootStore.dispatch('product/list', {
+        query: precachedQuery,
+        start: current,
+        size: perPage,
+        excludeFields: excludeFields,
+        includeFields: includeFields,
+        configuration: configuration,
+        append: append,
+        sort: sort,
+        updateState: true,
+        prefetchGroupProducts: prefetchGroupProducts
+      }).then((res) => {
+        let t1 = new Date().getTime()
+        rootStore.state.twoStageCachingDelta1 = t1 - t0
+  
+        let subloaders = []
+        if (!res || (res.noresults)) {
+          rootStore.dispatch('notification/spawnNotification', {
+            type: 'warning',
+            message: i18n.t('No products synchronized for this category. Please come back while online!'),
+            action1: { label: i18n.t('OK') }
+          })
+          if (!append) rootStore.dispatch('product/reset')
+          rootStore.state.product.list = { items: [] } // no products to show TODO: refactor to rootStore.state.category.reset() and rootStore.state.product.reset()
+          // rootStore.state.category.filters = { color: [], size: [], price: [] }
+          return []
+        } else {
+          if (rootStore.state.config.products.filterUnavailableVariants && rootStore.state.config.products.configurableChildrenStockPrefetchStatic) { // prefetch the stock items
+            const skus = []
+            let prefetchIndex = 0
+            res.items.map(i => {
+              if (rootStore.state.config.products.configurableChildrenStockPrefetchStaticPrefetchCount > 0) {
+                if (prefetchIndex > rootStore.state.config.products.configurableChildrenStockPrefetchStaticPrefetchCount) return
+              }
+              skus.push(i.sku) // main product sku to be checked anyway
+              if (i.type_id === 'configurable' && i.configurable_children && i.configurable_children.length > 0) {
+                for (const confChild of i.configurable_children) {
+                  const cachedItem = context.rootState.stock.cache[confChild.id]
+                  if (typeof cachedItem === 'undefined' || cachedItem === null) {
+                    skus.push(confChild.sku)
+                  }
+                }
+                prefetchIndex++
+              }
+            })
+            for (const chunkItem of chunk(skus, 15)) {
+              rootStore.dispatch('stock/list', { skus: chunkItem, skipCache }) // store it in the cache
+            }
+          }
+          if (populateAggregations === true && res.aggregations) { // populate filter aggregates
+            for (let attrToFilter of filters) { // fill out the filter options
+              let attributeData = context.rootState.attribute.list_by_code[attrToFilter]                            
+              let filterOptions = []
+              let uniqueFilterValues = new Set<string>()
+              if (attrToFilter !== 'price') {
+                if (res.aggregations['agg_terms_' + attrToFilter]) {
+                  let buckets = res.aggregations['agg_terms_' + attrToFilter].buckets
+                  if (res.aggregations['agg_terms_' + attrToFilter + '_options']) {
+                    buckets = buckets.concat(res.aggregations['agg_terms_' + attrToFilter + '_options'].buckets)
+                  }
+  
+                  for (let option of buckets) {
+                    uniqueFilterValues.add(toString(option.key))
+                  }
+                }
+  
+                uniqueFilterValues.forEach(key => {
+                  const label = optionLabel(rootStore.state.attribute, { attributeKey: attrToFilter, optionId: key })
+                  if (trim(label) !== '') { // is there any situation when label could be empty and we should still support it?
+                    filterOptions.push({
+                      id: key,
+                      label: label
+                    })
+                  }
+                });
+
+              } else { // special case is range filter for prices
+                const storeView = currentStoreView()
+                const currencySign = storeView.i18n.currencySign
+                if (res.aggregations['agg_range_' + attrToFilter]) {
+                  let index = 0
+                  let count = res.aggregations['agg_range_' + attrToFilter].buckets.length
+                  for (let option of res.aggregations['agg_range_' + attrToFilter].buckets) {
+                    filterOptions.push({
+                      id: option.key,
+                      from: option.from,
+                      to: option.to,
+                      label: (index === 0 || (index === count - 1)) ? (option.to ? '< ' + currencySign + option.to : '> ' + currencySign + option.from) : currencySign + option.from + (option.to ? ' - ' + option.to : '')// TODO: add better way for formatting, extract currency sign
+                    })
+                    index++
+                  }
+                }
+              }
+
+              let filterData: Attribute = {
+                attribute_id: attributeData.attribute_id,
+                attribute_code: attributeData.attribute_code,
+                frontend_input: attributeData.frontend_input,
+                is_visible: attributeData.is_visible,
+                is_visible_on_front: attributeData.is_visible_on_front,
+                options: filterOptions
+              }
+
+              context.dispatch('addAvailableFilter', {
+                key: attrToFilter,
+                options: filterData
+              })
+            }
+          }
+        }
+        return subloaders
+      }).catch((err) => {
+        console.error(err)
+        rootStore.dispatch('notification/spawnNotification', {
+          type: 'warning',
+          message: i18n.t('No products synchronized for this category. Please come back while online!'),
+          action1: { label: i18n.t('OK') }
+        })
+      })
+  
+      if (rootStore.state.config.entities.twoStageCaching && rootStore.state.config.entities.optimize && !Vue.prototype.$isServer && !rootStore.state.twoStageCachingDisabled) { // second stage - request for caching entities
+        console.log('Using two stage caching for performance optimization - executing second stage product caching') // TODO: in this case we can pre-fetch products in advance getting more products than set by pageSize
+        rootStore.dispatch('product/list', {
+          query: precachedQuery,
+          start: current,
+          size: perPage,
+          excludeFields: null,
+          includeFields: null,
+          updateState: false // not update the product listing - this request is only for caching
+        }).catch((err) => {
+          console.info("Problem with second stage caching - couldn't store the data")
+          console.info(err)
+        }).then((res) => {
+          let t2 = new Date().getTime()
+          rootStore.state.twoStageCachingDelta2 = t2 - t0
+          console.log('Using two stage caching for performance optimization - Time comparison stage1 vs stage2', rootStore.state.twoStageCachingDelta1, rootStore.state.twoStageCachingDelta2)
+          if (rootStore.state.twoStageCachingDelta1 > rootStore.state.twoStageCachingDelta2) { // two stage caching is not making any good
+            rootStore.state.twoStageCachingDisabled = true
+            console.log('Disabling two stage caching')
+          }
+        })
+      }
+      return productPromise
+    }
+  }
+}
+
+export default catalogCategoryExtendedModule

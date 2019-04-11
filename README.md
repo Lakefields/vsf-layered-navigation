@@ -11,7 +11,7 @@ Clone this git repository and add config properties to your local.json config fi
 Run yarn to install vue slider component for the price silder filter type. 
 
 ```shell
-git clone git@github.com:GetNoticed/vsf-layered-navigation.git vue-storefront/src/modules/layered-navigation
+git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git vue-storefront/src/modules/layered-navigation
 ```
 
 ```

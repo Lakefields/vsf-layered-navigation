@@ -28,7 +28,7 @@ This can result in a performance hit with large productlists, keep this in mind.
 
 To take full advantage of this layered navigation module, please run the indexing for your catalog including these changes in Mage2Vuestorefront https://github.com/DivanteLtd/mage2vuestorefront/pull/70
 
-# Module registeration - extend catalog core module
+# Module registration - extend catalog core module
 Open `src/modules/index.ts`
 
 Uncomment `import { extendModule } from '@vue-storefront/core/lib/module'`

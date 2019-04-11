@@ -1,7 +1,7 @@
 {
-  "name": "@getnoticed/layeredNavigationModule",
+  "name": "GetNoticedNL/layeredNavigationModule",
   "version": "1.0.0-rc.0",
-  "description": "Layered Navigation module for VSF 1.8",
+  "description": "Layered Navigation module for VSF",
   "author": "Get.Noticed",
   "license": "MIT",
   "dependencies": {

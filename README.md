@@ -3,8 +3,8 @@ Multiselect filters in Vue Storefront
 
 # Support
 This module is build to enable multiple filter options per attribute in mind.
+Use at your own responsibility in your project.
 For any support installing, using or request features for this module in Vue Storefront, please contact us at http://www.getnoticed.nl/contact
-Use at your own responsibility in your project
 
 # Installation
 Clone this git repository and add config properties to your local.json config file.

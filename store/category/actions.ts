@@ -6,17 +6,9 @@ import trim from 'lodash-es/trim'
 import toString from 'lodash-es/toString'
 import { optionLabel } from '@vue-storefront/core/modules/catalog/helpers/optionLabel'
 import { currentStoreView } from '@vue-storefront/core/lib/multistore'
+import FilterType from '../../types/FilterType'
 
-export interface Attribute {
-  attribute_id: number,
-  attribute_code: string,
-  frontend_input: string,
-  is_visible: boolean,
-  is_visible_on_front: number,
-  options: any
-}
-
-const catalogCategoryExtendedModule = {
+const catalogProductExtendedModule = {
   actions: {
     products (context, { populateAggregations = false, filters = [], searchProductQuery, current = 0, perPage = 50, sort = '', includeFields = null, excludeFields = null, configuration = null, append = false, skipCache = false }) {
       context.dispatch('setSearchOptions', {
@@ -142,7 +134,7 @@ const catalogCategoryExtendedModule = {
                 }
               }
 
-              let filterData: Attribute = {
+              let filterData: FilterType = {
                 attribute_id: attributeData.attribute_id,
                 attribute_code: attributeData.attribute_code,
                 frontend_input: attributeData.frontend_input,
@@ -195,4 +187,4 @@ const catalogCategoryExtendedModule = {
   }
 }
 
-export default catalogCategoryExtendedModule
+export default catalogProductExtendedModule

@@ -75,7 +75,7 @@ methods: {
 }
 ```
 
-# productsLeftCounter
+# A note about the 'productsLeftCounter'
 This is experimental, with the 'productsleftcounter' enabled, the amount of results for a filteroption is added in the filters sidebar. If the filter option should result in an empty product list, the filter option is faded and not clickable.
 
 This can result in a performance hit with large productlists, keep this in mind.

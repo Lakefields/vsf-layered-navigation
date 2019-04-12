@@ -13,12 +13,10 @@
 </template>
 
 <script>
-import { ProductCustomOption } from '@vue-storefront/core/modules/catalog/components/ProductCustomOption'
+import Filter from './Filter'
+
 export default {
   computed: {
-    chosenFilters () {
-      return this.$store.state.category.filters.chosen
-    },
     availableFilters () {
       return this.$store.state.category.filters.available
     },
@@ -47,37 +45,14 @@ export default {
       return this.productLeftCounterEnabled && this.productsLeftCounter === 0
     }
   },
-  mounted () {
-    for (let attributeCode in this.chosenFilters) {
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
-    }
-  },
   methods: {
-    filterChanged (filterOption) {
-      let attributeCode = filterOption.attribute_code
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
-    },
     switchFilter (id, label) {
       if (!this.noProductsLeft) {
         this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, label: label })
       }
     }
   },
-  mixins: [ProductCustomOption]
+  mixins: [Filter]
 }
 </script>
 

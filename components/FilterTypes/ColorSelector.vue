@@ -12,39 +12,11 @@
 </template>
 
 <script>
-import GenericSelector from '@vue-storefront/core/compatibility/components/GenericSelector'
+import Filter from './Filter'
 import rootStore from '@vue-storefront/core/store'
 export default {
-  mixins: [GenericSelector],
-  computed: {
-    chosenFilters () {
-      return this.$store.state.category.filters.chosen
-    }
-  },
-  mounted () {
-    for (let attributeCode in this.chosenFilters) {
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
-    }
-  },
+  mixins: [Filter],
   methods: {
-    filterChanged (filterOption) {
-      let attributeCode = filterOption.attribute_code
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
-    },
     colorFrom (label) {
       if (rootStore.state.config.products.colorMappings) {
         if (typeof rootStore.state.config.products.colorMappings[label] !== 'undefined') {

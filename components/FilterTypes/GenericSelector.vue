@@ -10,43 +10,9 @@
 </template>
 
 <script>
-import GenericSelector from '@vue-storefront/core/compatibility/components/GenericSelector'
+import Filter from './Filter'
 export default {
-  computed: {
-    chosenFilters () {
-      return this.$store.state.category.filters.chosen
-    }
-  },
-  mounted () {
-    for (let attributeCode in this.chosenFilters) {
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          console.log('active')
-          this.active = false
-        } else {
-          console.log('inactive')
-          this.active = true
-        }
-      }
-    }
-  },
-  methods: {
-    filterChanged (filterOption) {
-      let attributeCode = filterOption.attribute_code
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          console.log('active')
-          this.active = false
-        } else {
-          console.log('inactive')
-          this.active = true
-        }
-      }
-    }
-  },
-  mixins: [GenericSelector]
+  mixins: [Filter]
 }
 </script>
 

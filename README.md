@@ -10,8 +10,8 @@ Are you missing features you need, please feel free to contact us via https://ww
 # Installation
 Follow these steps to install this module.
 
-1. Clone this git repository and add config properties to your local.json config file.
-1. **Run yarn to install vue slider component** for the price silder filter type. (if you have a VSF instance running in development mode, stop it first to run `yarn`)
+1. Clone this git repository from within you vue-storefront root folder
+1. **Run yarn to install vue slider component** for the price silder filter type
 1. Add the config properties
 
 ```shell

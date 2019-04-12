@@ -3,11 +3,6 @@ Multiselect filters in Vue Storefront with Price Slider
 
 ![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/56031978-31a96600-5d21-11e9-813a-1a370a6e8094.png)
 
-# Support
-This module is built to enable multiple filter options per attribute in mind.\
-Use at your own responsibility in your project. This module is tested on Vue Storefront 1.9.\
-For any support installing, using or request features for this module, please contact us at http://www.getnoticed.nl/contact
-
 # Purpose
 We created this module to make searching the catalog a better experience, there are a lot more features to come and we'll add these features to this module when we finished development on them.\
 Are you missing features you need, please feel free to contact us or open a pull request of course.
@@ -113,6 +108,17 @@ To take full advantage of this layered navigation module, please run the indexin
 
 # Passive listeners warning
 Remove `import '@vue-storefront/core/lib/passive-listeners'` from `src/themes/default/index.js` 
+
+# Support
+This module is built to enable multiple filter options per attribute in mind.\
+Use at your own responsibility in your project. This module is tested on Vue Storefront 1.9.\
+Read above about the experimental state of the 'productsleftcounter' option.\
+If you need any assistance or want to do feature requests you can turn to these channels:
+
+* Contact us via http://www.getnoticed.nl/contact
+* Create issue on this Github repository
+* Add comment on the Vue Storefront Forum
+* Join the [Vue Storefront Slack community](https://vuestorefront.slack.com) via [invitation link](https://join.slack.com/t/vuestorefront/shared_invite/enQtMzA4MTM2NTE5NjM2LTI1M2RmOWIyOTk0MzFlMDU3YzJlYzcyYzNiNjUyZWJiMTZjZjc3MjRlYmE5ZWQ1YWRhNTQyM2ZjN2ZkMzZlNTg)
 
 # License
 This module is completely free and released under the MIT License.

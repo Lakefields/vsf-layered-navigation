@@ -89,7 +89,6 @@ export default {
       let filterData = []
       let filter = filterOption.attribute_code
       let OptionId = filterOption.id
-      console.log(filterOption)
 
       filterData = Object.assign([], this.filters.chosen[filter])
 

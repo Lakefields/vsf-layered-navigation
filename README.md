@@ -5,7 +5,7 @@ Multiselect filters in Vue Storefront with Price Slider and active filters
 
 # Purpose
 We created this module to make searching the catalog a better experience, there are a lot more features to come and we'll add these features to this module when we finished development on them.\
-Are you missing features you need, please feel free to contact us or open a pull request of course.
+Are you missing features you need, please feel free to contact us via https://www.getnoticed.nl/contactform or open a pull request.
 
 # Installation
 Follow these steps to install this module.

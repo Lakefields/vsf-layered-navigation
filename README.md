@@ -1,9 +1,7 @@
 # Layered Navigation Module
 Multiselect filters in Vue Storefront with Price Slider
 
-![vsf-layered-navigation-priceSlider](https://user-images.githubusercontent.com/26965893/55967045-e38d5780-5c79-11e9-83f1-c983e90ec46a.png)
-
-![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/55967046-e425ee00-5c79-11e9-9113-d4f6b0fce609.png)
+![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/56031978-31a96600-5d21-11e9-813a-1a370a6e8094.png)
 
 # Support
 This module is built to enable multiple filter options per attribute in mind.\

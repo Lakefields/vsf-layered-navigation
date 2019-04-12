@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{'active': active}"
-    class="bg-cl-primary brdr-1 brdr-cl-primary brdr-square h5 cl-tertiary generic-selector"
+    class="bg-cl-primary brdr-1 brdr-cl-primary brdr-square h5 cl-tertiary generic-selector mr10 mb10"
     @click="switchFilter(id, label)"
     :aria-label="$t('Select ' + label)"
   >
@@ -12,6 +12,40 @@
 <script>
 import GenericSelector from '@vue-storefront/core/compatibility/components/GenericSelector'
 export default {
+  computed: {
+    chosenFilters () {
+      return this.$store.state.category.filters.chosen
+    }
+  },
+  mounted () {
+    for (let attributeCode in this.chosenFilters) {
+      if (attributeCode === this.code) {
+        let chosenFilters = this.chosenFilters[attributeCode]
+        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
+          console.log('active')
+          this.active = false
+        } else {
+          console.log('inactive')
+          this.active = true
+        }
+      }
+    }
+  },
+  methods: {
+    filterChanged (filterOption) {
+      let attributeCode = filterOption.attribute_code
+      if (attributeCode === this.code) {
+        let chosenFilters = this.chosenFilters[attributeCode]
+        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
+          console.log('active')
+          this.active = false
+        } else {
+          console.log('inactive')
+          this.active = true
+        }
+      }
+    }
+  },
   mixins: [GenericSelector]
 }
 </script>
@@ -23,12 +57,14 @@ export default {
   $color-disabled: color(secondary, $colors-border);
 
   .generic-selector {
-    height: 30px;
-    line-height: 30px;
+    height: 40px;
+    line-height: 40px;
     display: inline-block;
+    min-width: 50px;
+    text-align: center;
+    box-sizing: border-box;
     padding-left: 8px;
     padding-right: 8px;
-    margin-right: 5px;
 
     &:hover,
     &:focus {

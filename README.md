@@ -15,7 +15,7 @@ We created this module to make searching the catalog a better experience, there 
 Are you missing features you need, please feel free to contact us or open a pull request of course.
 
 # Installation
-Follow these steps to install this module.\
+Follow these steps to install this module.
 
 1. Clone this git repository and add config properties to your local.json config file.
 1. **Run yarn to install vue slider component** for the price silder filter type. (if you have a VSF instance running in development mode, stop it first to run `yarn`)
@@ -29,6 +29,33 @@ git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git src/modules/lay
 "layeredNavigation": {
   "enableProductsLeftCounter": true,
   "pagePortionSize": 200
+},
+```
+
+Make sure to add your desired defaultFilters in your local config \
+**For default theme this is**
+
+```
+...
+"products": {
+  "defaultFilters": ["color", "size", "price", "erin_recommends"],
+},
+```
+
+Also add these attribute you set in `products.defaultFilters` to `entities.productList.includeFields` and `entities.productListWithChildren.includeFields`
+
+```
+...
+"entities": {
+  ...
+  "productList": {
+    ...
+    "includeFields": { ..., "color", "size", "price", "erin_recommends" }
+  },
+  "productListWithChildren": {
+    ...
+    "includeFields": { ..., "color", "size", "price", "erin_recommends" }
+  }    
 },
 ```
 

@@ -2,7 +2,7 @@
 Multiselect filters in Vue Storefront with Price Slider and active filters
 
 ![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/56032629-ee4ff700-5d22-11e9-9795-8b813f3dab55.png)
-- image shown above is a demo with the catalog of https://demo.vuestorefront.io/ this module really comes in to play when you integrate it to your custom theme with many more filters for the productlist
+Image shown above is a demo with the catalog of https://demo.vuestorefront.io/ this module really comes in to play when you integrate it to your custom theme with many more filters for the productlist
 
 # Purpose
 We created this module to make searching the catalog a better experience, there are a lot more features to come and we'll add these features to this module when we finished development on them.\

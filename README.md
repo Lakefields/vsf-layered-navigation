@@ -117,7 +117,7 @@ If you need any assistance or want to do feature requests you can turn to these 
 
 * Contact us via http://www.getnoticed.nl/contact
 * Create issue on this Github repository
-* Add comment on the Vue Storefront Forum
+* Add comment on the Vue Storefront Forum - Layered Navigation Module thread: https://forum.vuestorefront.io/t/layered-navigation-module/197
 * Join the [Vue Storefront Slack community](https://vuestorefront.slack.com) via [invitation link](https://join.slack.com/t/vuestorefront/shared_invite/enQtMzA4MTM2NTE5NjM2LTI1M2RmOWIyOTk0MzFlMDU3YzJlYzcyYzNiNjUyZWJiMTZjZjc3MjRlYmE5ZWQ1YWRhNTQyM2ZjN2ZkMzZlNTg)
 
 # License

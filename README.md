@@ -1,3 +1,5 @@
+![npm (scoped)](https://img.shields.io/npm/v/@getnoticed/vsf-layered-navigation.svg)
+
 # Layered Navigation Module
 Multiselect filters in Vue Storefront with Price Slider and active filters
 
@@ -11,9 +13,10 @@ Are you missing features you need, please feel free to contact us via https://ww
 # Installation
 Follow these steps to install this module.
 
-1. Clone this git repository from within your vue-storefront root folder
-1. **Run yarn to install vue slider component** for the price silder filter type
-1. Add the config properties
+```
+$ yarn add @getnoticed/vsf-layered-navigation
+$ yarn
+```
 
 ```shell
 git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git src/modules/layered-navigation

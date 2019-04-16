@@ -1,10 +1,15 @@
 {
-  "name": "@getnoticed/layeredNavigationModule",
-  "version": "1.0.0-rc.0",
+  "name": "@getnoticed/vsf-layered-navigation",
+  "version": "1.0.0",
   "description": "Layered Navigation module for VSF",
   "author": "Get.Noticed",
   "license": "MIT",
+  "repository": "GetNoticedNL/vsf-layered-navigation",
   "dependencies": {
     "vue-slider-component": "^2.8.10"
-  }
+  },
+  "keywords": [
+    "Vue Storefront",
+    "VueJS"
+  ]
 }

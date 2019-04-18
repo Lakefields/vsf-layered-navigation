@@ -79,7 +79,7 @@ import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
 import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
 ```
 
-Add ActiveFilters components to your components: 
+Add `ActiveFilters` components: 
 
 ```js
 ...

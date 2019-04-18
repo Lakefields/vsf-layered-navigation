@@ -79,22 +79,101 @@ import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
 import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
 ```
 
-In your markup please add 
-```vue
-<active-filters :filters="filters.available" />
-```
-For showing the active filters
+Add ActiveFilters components to your components: 
 
 ```js
 ...
 components: {
   ...
   ActiveFilters
-},
-preAsyncData {}
+}
+```
+
+For showing the active filters please add the component to your markup: 
+```vue
+<active-filters :filters="filters.available" />
+```
+
+Add the `pagePortionSize` config property from this module to the preSyncData
+
+```js
+preAsyncData ({ store, route }) {
+  store.dispatch('category/setSearchOptions', {
+    populateAggregations: true,
+    store: store,
+    route: route,
+    current: 0,
+    perPage: store.state.config.layeredNavigation.pagePortionSize,
+    sort: store.state.config.entities.productList.sort,
+    filters: store.state.config.products.defaultFilters,
+    includeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.includeFields : null,
+    excludeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.excludeFields : null,
+    append: false
+  })
+}
+```
+
+Make sure to add the onFilterChanged and onSortOrderChanged to your methods, the helper `buildFilterProductsQueryByFilterArray` is used in these methods. This helper takes care to build the query with multiple filteroptions.
+
+```js
+...
 methods: {
-  onFilterChanged (filterOption) {},
-  onSortOrderChanged (param) {}  
+  ...
+onFilterChanged (filterOption) {
+    this.pagination.current = 0
+    let filterData = []
+    let filter = filterOption.attribute_code
+    let OptionId = filterOption.id
+
+    filterData = Object.assign([], this.filters.chosen[filter])
+
+    if (filterData.filter(option => option.id === OptionId).length === 0) {
+      filterData.push(filterOption)
+    } else {
+      let index = filterData.map((option) => option.id).indexOf(OptionId)
+      if (index > -1) {
+        filterData.splice(index, 1)
+      }
+    }
+    this.filters.chosen[filter] = filterData
+    let filterQr = buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
+
+    const filtersConfig = Object.assign({}, this.filters.chosen) // create a copy because it will be used asynchronously (take a look below)
+    this.mergeSearchOptions({
+      populateAggregations: false,
+      searchProductQuery: filterQr,
+      current: this.pagination.current,
+      perPage: this.$store.state.config.layeredNavigation.pagePortionSize,
+      configuration: filtersConfig,
+      append: false,
+      includeFields: null,
+      excludeFields: null
+    })
+    this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
+    }) // because already aggregated
+  },
+  onSortOrderChanged (param) {
+    this.pagination.current = 0
+    if (param.attribute) {
+      const filtersConfig = Object.assign({}, this.filters.chosen) // create a copy because it will be used asynchronously (take a look below)
+      let filterQr = buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
+      this.mergeSearchOptions({
+        sort: param.attribute,
+        searchProductQuery: filterQr,
+        current: this.pagination.current,
+        perPage: this.$store.state.config.layeredNavigation.pagePortionSize,
+        configuration: filtersConfig,
+        append: false,
+        includeFields: null,
+        excludeFields: null
+      })
+      this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
+      })
+    } else {
+      this.notify()
+    }
+  },
+  ...
 }
 ```
 

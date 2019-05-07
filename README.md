@@ -79,7 +79,7 @@ import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
 import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
 ```
 
-Add `ActiveFilters` components: 
+Add `ActiveFilters` components:
 
 ```js
 ...
@@ -89,7 +89,7 @@ components: {
 }
 ```
 
-For showing the active filters please add the component to your markup: 
+For showing the active filters please add the component to your markup:
 ```vue
 <active-filters :filters="filters.available" />
 ```
@@ -182,18 +182,20 @@ This is experimental, with the 'productsleftcounter' enabled, the amount of resu
 
 This can result in a performance hit with large productlists, keep this in mind.
 
-**NB**: Only supports Simple products right now, we are working on a solution to include support for configurable products also. For now, set the config property `enableProductsLeftCounter` to false if you have (a lot of) configurable products in your catalog. 
+**NB**: Only supports Simple products right now, we are working on a solution to include support for configurable products also. For now, set the config property `enableProductsLeftCounter` to false if you have (a lot of) configurable products in your catalog.
 
 To take full advantage of this layered navigation module, please run the indexing for your catalog including these changes in Mage2Vuestorefront https://github.com/DivanteLtd/mage2vuestorefront/pull/70
 
 # Passive listeners warning
-Remove `import '@vue-storefront/core/lib/passive-listeners'` from `src/themes/default/index.js` 
+Remove `import '@vue-storefront/core/lib/passive-listeners'` from `src/themes/default/index.js`
 
 # Support
 This module is built to enable multiple filter options per attribute in mind.\
-Use at your own responsibility in your project. This module is tested on Vue Storefront 1.9.\
+Use at your own responsibility in your project. This module is tested on Vue Storefront 1.8.\
 Read above about the experimental state of the 'productsleftcounter' option.\
 If you need any assistance or want to do feature requests you can turn to these channels:
+
+**NB**: We are busy with support for Vue Storefront 1.9 which was released yesterday
 
 * Create issue on this Github repository
 * Add comment on the Vue Storefront Forum - Layered Navigation Module thread: https://forum.vuestorefront.io/t/layered-navigation-module-with-priceslider-component/197

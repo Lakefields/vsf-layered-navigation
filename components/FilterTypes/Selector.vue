@@ -23,16 +23,25 @@ export default {
     currentProductList () {
       return this.$store.state.product.list.items
     },
+    productsTotal () {
+      return this.$store.state.product.list.total
+    },
+    productsCounter () {
+      return this.currentProductList.length
+    },
     productLeftCounterEnabled () {
-      return this.$store.state.config.layeredNavigation.enableProductsLeftCounter
+      return (this.productsTotal <= this.productsCounter) ? this.$store.state.config.layeredNavigation.enableProductsLeftCounter : false
     },
     productsLeftCounter () {
       let countProducts
       for (let attributeCode in this.availableFilters) {
         if (attributeCode === this.code) {
-          let attributeId = parseInt(this.id)
-          countProducts = this.currentProductList.filter(attribute => {
-            return (typeof attribute[attributeCode] === 'object') ? (attribute[attributeCode].indexOf(attributeId) !== -1) : attribute[attributeCode] === this.id
+          let attributeId = this.id
+          countProducts = this.currentProductList.filter(product => {
+            if (product[attributeCode] === null) {
+              return false
+            }
+            return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(attributeId) !== -1 : product[attributeCode] === parseInt(this.id)
           })
         }
       }

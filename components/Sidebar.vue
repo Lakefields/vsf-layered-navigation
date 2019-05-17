@@ -25,7 +25,7 @@
         <div v-else-if="filter.frontend_input==='price'">
           <price-slider
             context="category"
-            code="price"
+            :code="filter.attribute_code"
             :id="getMaxPrice"
             :from="getMinPrice"
             :to="getMaxPrice"
@@ -63,8 +63,9 @@
 </template>
 
 <script>
-import { buildFilterProductsQuery } from '@vue-storefront/core/helpers'
+import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
 import { mapGetters } from 'vuex'
+import rootStore from '@vue-storefront/core/store'
 import GenericSelector from './FilterTypes/GenericSelector'
 import ColorSelector from './FilterTypes/ColorSelector'
 import Selector from './FilterTypes/Selector'
@@ -91,9 +92,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery']),
+    ...mapGetters(
+      'category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery']
+    ),
     category () {
       return this.getCurrentCategory
+    },
+    getPriceFilterAttribute () {
+      return (typeof rootStore.state.config.layeredNavigation.price_filter_attribute !== 'undefined') ? rootStore.state.config.layeredNavigation.price_filter_attribute : 'price'
     },
     availableFilters () {
       return pickBy(this.filters, (filter) => { return (filter.options.length) })
@@ -102,10 +108,10 @@ export default {
       return this.$store.state.product.list.items
     },
     getMaxPrice () {
-      return Math.max.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
+      return Math.max.apply(Math, this.currentProductList.map((attribute) => { return attribute.price }))
     },
     getMinPrice () {
-      return Math.min.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
+      return Math.min.apply(Math, this.currentProductList.map((attribute) => { return attribute.price }))
     },
     activeFilters () {
       return this.getActiveCategoryFilters
@@ -121,7 +127,7 @@ export default {
     resetAllFilters () {
       this.$bus.$emit('filter-reset')
       this.$store.dispatch('category/resetFilters')
-      this.$store.dispatch('category/searchProductQuery', buildFilterProductsQuery(this.category, this.activeFilters))
+      this.$store.dispatch('category/searchProductQuery', buildFilterProductsQueryByFilterArray(this.category, this.activeFilters))
       this.$store.dispatch('category/products', {searchProductQuery: this.getCurrentCategoryProductQuery})
     }
   }

@@ -38,12 +38,13 @@ export default {
         'tooltip-dir': ['bottom', 'bottom'],
         'formatter': '€ {value}',
         'process-style': {
-          'backgroundColor': '#e0e0e0'
+          'backgroundColor': '#f9bb2a',
+          'fontWeight': 700
         },
         'tooltip-style': {
-          'backgroundColor': '#e0e0e0',
+          'backgroundColor': '#f9bb2a',
           'color': '#4f4f4f',
-          'border-color': '#e0e0e0',
+          'border-color': '#f9bb2a',
           'padding': '7px 10px'
         }
       }

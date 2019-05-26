@@ -178,7 +178,7 @@ h4 {
     }
   }
   &.filter-expanded {
-    max-height: 1000px;
+    max-height: 10000px;
   }
 }
 

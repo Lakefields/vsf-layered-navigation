@@ -68,6 +68,7 @@ import GenericSelector from './FilterTypes/GenericSelector'
 import ColorSelector from './FilterTypes/ColorSelector'
 import Selector from './FilterTypes/Selector'
 import PriceSlider from './FilterTypes/PriceSlider'
+import i18n from '@vue-storefront/i18n'
 
 export default {
   name: 'ProductFilter',
@@ -124,7 +125,7 @@ export default {
       return this.filter.options.length - this.limit
     },
     filterExpanderMessage () {
-      return (this.filterExpand) ? 'Show less filter options' : 'Show ' + this.remainingFilterOptions + ' more filter options'
+      return (this.filterExpand) ? i18n.t('Show less filter options') : (this.remainingFilterOptions > 1) ? i18n.t('Show {remainingFilterOptions} more filter options', { remainingFilterOptions: this.remainingFilterOptions }) : i18n.t('Show {remainingFilterOptions} more filter option', { remainingFilterOptions: this.remainingFilterOptions })
     }
   },
   methods: {

@@ -1,21 +1,27 @@
 <script>
+import { mapGetters } from 'vuex'
 import { ProductCustomOption } from '@vue-storefront/core/modules/catalog/components/ProductCustomOption'
 
 export default {
   mixins: [ProductCustomOption],
   computed: {
-    chosenFilters () {
-      return this.$store.state.category.filters.chosen
+    ...mapGetters('category', ['getActiveCategoryFilters']),
+    activeFilters () {
+      return this.getActiveCategoryFilters
     }
   },
   mounted () {
-    for (let attributeCode in this.chosenFilters) {
+    for (let attributeCode in this.activeFilters) {
       if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
+        if (this.activeFilters.hasOwnProperty(attributeCode)) {
+          let activeFilters = this.activeFilters[attributeCode]
+          if (activeFilters.filter(option => option.id === this.id).length === 0) {
+            this.active = false
+          } else {
+            this.active = true
+          }
         } else {
-          this.active = true
+          this.active = false
         }
       }
     }
@@ -24,11 +30,16 @@ export default {
     filterChanged (filterOption) {
       let attributeCode = filterOption.attribute_code
       if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
+        console.log(attributeCode, this.activeFilters.hasOwnProperty(attributeCode))
+        if (this.activeFilters.hasOwnProperty(attributeCode)) {
+          let activeFilters = this.activeFilters[attributeCode]
+          if (activeFilters.filter(option => option.id === this.id).length === 0) {
+            this.active = false
+          } else {
+            this.active = true
+          }
         } else {
-          this.active = true
+          this.active = false
         }
       }
     }

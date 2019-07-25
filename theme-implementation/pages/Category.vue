@@ -6,7 +6,7 @@
         <div class="row middle-sm">
           <h1 class="col-sm-9 category-title mb10"> {{ category.name }} </h1>
           <div class="sorting col-sm-3 align-right"><sort-by /></div>
-          <active-filters :filters="filters.available" />
+          <active-filters />
         </div>
       </div>
       <div class="container">
@@ -47,7 +47,7 @@
 
 <script>
 import Vue from 'vue'
-
+import { isServer } from '@vue-storefront/core/helpers'
 import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
 import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
 import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
@@ -78,8 +78,8 @@ export default {
       perPage: store.state.config.layeredNavigation.pagePortionSize,
       sort: store.state.config.entities.productList.sort,
       filters: store.state.config.products.defaultFilters,
-      includeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.includeFields : null,
-      excludeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.excludeFields : null,
+      includeFields: store.state.config.entities.optimize && isServer ? store.state.config.entities.productList.includeFields : null,
+      excludeFields: store.state.config.entities.optimize && isServer ? store.state.config.entities.productList.excludeFields : null,
       append: false
     })
   },
@@ -90,17 +90,29 @@ export default {
       let filter = filterOption.attribute_code
       let OptionId = filterOption.id
 
-      filterData = Object.assign([], this.filters.chosen[filter])
-
-      if (filterData.filter(option => option.id === OptionId).length === 0) {
-        filterData.push(filterOption)
+      if (filter === 'price') {
+        if (filterOption.hasOwnProperty('remove') && filterOption.remove) {
+          this.$bus.$emit('reset-price-slider')
+        } else {
+          filterData.push(filterOption)
+        }
       } else {
-        let index = filterData.map((option) => option.id).indexOf(OptionId)
-        if (index > -1) {
-          filterData.splice(index, 1)
+        filterData = Object.assign([], this.filters.chosen[filter])
+        if (filterData.filter(option => option.id === OptionId).length === 0) {
+          filterData.push(filterOption)
+        } else {
+          let index = filterData.map((option) => option.id).indexOf(OptionId)
+          if (index > -1) {
+            filterData.splice(index, 1)
+          }
         }
       }
-      this.filters.chosen[filter] = filterData
+      if (filterData.length === 0) {
+        Vue.delete(this.filters.chosen, filter)
+      } else {
+        Vue.set(this.filters.chosen, filter, filterData)
+      }
+
       let filterQr = buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
 
       const filtersConfig = Object.assign({}, this.filters.chosen) // create a copy because it will be used asynchronously (take a look below)
@@ -116,6 +128,24 @@ export default {
       })
       this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
       }) // because already aggregated
+    },
+    pullMoreProducts () {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return
+      let current = this.getCurrentCategoryProductQuery.current + this.getCurrentCategoryProductQuery.perPage
+      this.mergeSearchOptions({
+        append: true,
+        route: this.$route,
+        store: this.$store,
+        current
+      })
+      this.pagination.current = this.getCurrentCategoryProductQuery.current
+      this.pagination.perPage = this.getCurrentCategoryProductQuery.perPage
+      if (this.getCurrentCategoryProductQuery.current <= this.productsTotal) {
+        this.mergeSearchOptions({
+          searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
+        })
+        return this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery)
+      }
     },
     onSortOrderChanged (param) {
       this.pagination.current = 0

@@ -1,85 +1,43 @@
 <template>
-  <span
-    v-if="active"
-    :class="{'active': !active, 'active-filter-label': true}"
-    :aria-label="$t('Select ' + label)"
-  >
-    {{ label }}
-    <i
-      class="material-icons"
-      @click="switchFilter(id, label)">
-      close
-    </i>
-  </span>
+  <div>
+    <span
+      v-for="(attribute, index) in attributes"
+      :key="index"
+      class="active active-filter-label"
+      :aria-label="$t('Select ' + attribute.label)"
+    >
+      {{ attribute.label }}
+      <i
+        class="material-icons"
+        @click="removeFilter(attribute)">
+        close
+      </i>
+    </span>
+  </div>
 </template>
 
 <script>
-import GenericSelector from '@vue-storefront/core/compatibility/components/GenericSelector'
 
 export default {
   name: 'ActiveFilter',
   props: {
-    label: {
-      type: String,
-      required: false,
-      default: () => false
-    },
-    id: {
-      type: null,
-      required: false,
-      default: () => false
-    },
-    code: {
-      type: null,
-      required: false,
-      default: () => false
-    },
-    context: {
-      type: null,
-      required: false,
+    attributes: {
+      type: Array,
+      required: true,
       default: () => false
     }
   },
   data () {
     return {
-      active: false,
-      productsLeft: true
-    }
-  },
-  computed: {
-    chosenFilters () {
-      return this.$store.state.category.filters.chosen
-    },
-    availableFilters () {
-      return this.$store.state.category.filters.available
-    }
-  },
-  mounted () {
-    for (let attributeCode in this.chosenFilters) {
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
+      context: 'category',
+      active: false
     }
   },
   methods: {
-    filterChanged (filterOption) {
-      let attributeCode = filterOption.attribute_code
-      if (attributeCode === this.code) {
-        let chosenFilters = this.chosenFilters[attributeCode]
-        if (chosenFilters.filter(option => option.id === this.id).length === 0) {
-          this.active = false
-        } else {
-          this.active = true
-        }
-      }
+    removeFilter (attribute) {
+      this.$bus.$emit('filter-changed-' + this.context, { ...attribute, remove: true })
     }
-  },
-  mixins: [GenericSelector]
+  }
 }
 </script>
 

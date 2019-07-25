@@ -1,35 +1,25 @@
 <template>
   <div class="active-filters">
-    <div v-for="(filter, filterIndex) in availableFilters"
-         :key="filterIndex">
-      <active-filter
-        context="category"
-        :attribute_code="filter.attribute_code"
-        :code="filterIndex"
-        v-for="(option, index) in filter.options"
-        :key="index"
-        :id="option.id"
-        :label="option.label"
-      />
+    <div
+      v-for="(attributes, filter) in activeFilters"
+      :key="filter"
+    >
+      <span class="filter">{{ $t(filter + '_filter') }}</span>
+      <active-filter :attributes="attributes" />
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ActiveFilter from './ActiveFilter'
-import pickBy from 'lodash-es/pickBy'
 
 export default {
   name: 'ActiveFilters',
-  props: {
-    filters: {
-      type: Object,
-      required: true
-    }
-  },
   computed: {
-    availableFilters () {
-      return pickBy(this.filters, (filter) => { return (filter.options.length) })
+    ...mapGetters('category', ['getActiveCategoryFilters']),
+    activeFilters () {
+      return this.getActiveCategoryFilters
     }
   },
   components: {

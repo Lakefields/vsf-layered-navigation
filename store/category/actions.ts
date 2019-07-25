@@ -67,6 +67,11 @@ const catalogProductExtendedModule = {
           // rootStore.state.category.filters = { color: [], size: [], price: [] }
           return []
         } else {
+          //set min and max prices for this category
+          const minPrice = Math.floor(Math.min.apply(Math, res.items.map((attribute) => { return attribute.priceInclTax })))
+          const maxPrice = Math.ceil(Math.max.apply(Math, res.items.map((attribute) => { return attribute.priceInclTax })))
+          const priceRange = [minPrice, maxPrice]
+          
           if (rootStore.state.config.products.filterUnavailableVariants && rootStore.state.config.products.configurableChildrenStockPrefetchStatic) { // prefetch the stock items
             const skus = []
             let prefetchIndex = 0
@@ -115,22 +120,11 @@ const catalogProductExtendedModule = {
                     })
                   }
                 });
+                filterOptions = [...filterOptions].sort((a, b) => { return a.label - b.label })
 
               } else { // special case is range filter for prices
-                const storeView = currentStoreView()
-                const currencySign = storeView.i18n.currencySign
                 if (res.aggregations['agg_range_' + attrToFilter]) {
-                  let index = 0
-                  let count = res.aggregations['agg_range_' + attrToFilter].buckets.length
-                  for (let option of res.aggregations['agg_range_' + attrToFilter].buckets) {
-                    filterOptions.push({
-                      id: option.key,
-                      from: option.from,
-                      to: option.to,
-                      label: (index === 0 || (index === count - 1)) ? (option.to ? '< ' + currencySign + option.to : '> ' + currencySign + option.from) : currencySign + option.from + (option.to ? ' - ' + option.to : '')// TODO: add better way for formatting, extract currency sign
-                    })
-                    index++
-                  }
+                  filterOptions = priceRange
                 }
               }
 

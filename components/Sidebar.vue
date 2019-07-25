@@ -4,6 +4,13 @@
       <h4>
         {{ $t('Filter') }}
       </h4>
+      <button
+        class="no-outline brdr-none py15 px40 bg-cl-mine-shaft :bg-cl-th-secondary ripple h5 cl-white sans-serif"
+        @click="resetAllFilters"
+        v-show="hasActiveFilters"
+      >
+        {{ $t('Clear') }}
+      </button>
       <div
         v-for="(filter, filterIndex) in availableFilters"
         :key="filterIndex"
@@ -26,9 +33,8 @@
           <price-slider
             context="category"
             code="price"
-            :id="getMaxPrice"
-            :from="getMinPrice"
-            :to="getMaxPrice"
+            id="price"
+            :price-range="filter.options"
             content="Price "
             label="Price Label"
           />
@@ -63,7 +69,7 @@
 </template>
 
 <script>
-import { buildFilterProductsQuery } from '@vue-storefront/core/helpers'
+// import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
 import { mapGetters } from 'vuex'
 import GenericSelector from './FilterTypes/GenericSelector'
 import ColorSelector from './FilterTypes/ColorSelector'
@@ -90,6 +96,9 @@ export default {
       selectorFilterTypes: ['select', 'multiselect']
     }
   },
+  mounted () {
+    this.resetAllFilters()
+  },
   computed: {
     ...mapGetters('category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery']),
     category () {
@@ -101,14 +110,14 @@ export default {
     currentProductList () {
       return this.$store.state.product.list.items
     },
-    getMaxPrice () {
-      return Math.max.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
-    },
-    getMinPrice () {
-      return Math.min.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
-    },
     activeFilters () {
       return this.getActiveCategoryFilters
+    },
+    hasActiveFilters () {
+      return Object.keys(this.activeFilters).length !== 0
+    },
+    activeFiltersCount () {
+      return pickBy(this.activeFilters, (activeFilter) => { return (activeFilter.length) })
     }
   },
   methods: {
@@ -120,9 +129,6 @@ export default {
     },
     resetAllFilters () {
       this.$bus.$emit('filter-reset')
-      this.$store.dispatch('category/resetFilters')
-      this.$store.dispatch('category/searchProductQuery', buildFilterProductsQuery(this.category, this.activeFilters))
-      this.$store.dispatch('category/products', {searchProductQuery: this.getCurrentCategoryProductQuery})
     }
   }
 }

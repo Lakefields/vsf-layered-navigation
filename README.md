@@ -173,6 +173,24 @@ onFilterChanged (filterOption) {
       this.notify()
     }
   },
+  pullMoreProducts () {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return
+    let current = this.getCurrentCategoryProductQuery.current + this.getCurrentCategoryProductQuery.perPage
+    this.mergeSearchOptions({
+      append: true,
+      route: this.$route,
+      store: this.$store,
+      current
+    })
+    this.pagination.current = this.getCurrentCategoryProductQuery.current
+    this.pagination.perPage = this.getCurrentCategoryProductQuery.perPage
+    if (this.getCurrentCategoryProductQuery.current <= this.productsTotal) {
+      this.mergeSearchOptions({
+        searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
+      })
+      return this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery)
+    }
+  },
   ...
 }
 ```

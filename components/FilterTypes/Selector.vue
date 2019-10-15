@@ -30,9 +30,12 @@ export default {
       let countProducts
       for (let attributeCode in this.availableFilters) {
         if (attributeCode === this.code) {
-          let attributeId = parseInt(this.id)
-          countProducts = this.currentProductList.filter(attribute => {
-            return (typeof attribute[attributeCode] === 'object') ? (attribute[attributeCode].indexOf(attributeId) !== -1) : attribute[attributeCode] === this.id
+          let attributeId = this.id
+          countProducts = this.currentProductList.filter(product => {
+            if (product[attributeCode] === null) {
+              return false
+            }
+            return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(attributeId) !== -1 : product[attributeCode] === parseInt(this.id)
           })
         }
       }

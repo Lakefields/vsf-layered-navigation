@@ -30,7 +30,6 @@ export default {
     filterChanged (filterOption) {
       let attributeCode = filterOption.attribute_code
       if (attributeCode === this.code) {
-        console.log(attributeCode, this.activeFilters.hasOwnProperty(attributeCode))
         if (this.activeFilters.hasOwnProperty(attributeCode)) {
           let activeFilters = this.activeFilters[attributeCode]
           if (activeFilters.filter(option => option.id === this.id).length === 0) {

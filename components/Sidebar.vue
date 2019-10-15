@@ -69,8 +69,8 @@
 </template>
 
 <script>
-// import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
 import { mapGetters } from 'vuex'
+import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
 import GenericSelector from './FilterTypes/GenericSelector'
 import ColorSelector from './FilterTypes/ColorSelector'
 import Selector from './FilterTypes/Selector'
@@ -128,7 +128,15 @@ export default {
       return this.selectorFilterTypes.includes(filterType)
     },
     resetAllFilters () {
-      this.$bus.$emit('filter-reset')
+      if (this.hasActiveFilters) {
+        this.$bus.$emit('filter-reset')
+        this.$store.dispatch('category/resetFilters')
+        this.$store.dispatch('category/searchProductQuery', {})
+        this.$store.dispatch('category/mergeSearchOptions', {
+          searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.activeFilters)
+        })
+        this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery)
+      }
     }
   }
 }

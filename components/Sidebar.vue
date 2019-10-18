@@ -1,68 +1,69 @@
 <template>
   <div class="sidebar">
-    <div class="filters">
-      <h4>
-        {{ $t('Filter') }}
-      </h4>
-      <button
-        class="no-outline brdr-none py15 px40 bg-cl-mine-shaft :bg-cl-th-secondary ripple h5 cl-white sans-serif"
+    <h4 class="sidebar__header relative mt35 mb20 flex">
+      <span> {{ $t('Filter') }} </span>
+      <span
+        class="weight-400 sidebar__header__clear pointer sans-serif flex lh25"
         @click="resetAllFilters"
         v-show="hasActiveFilters"
       >
-        {{ $t('Clear') }}
-      </button>
-      <div
-        v-for="(filter, filterIndex) in availableFilters"
-        :key="filterIndex"
-      >
-        <h5>
-          {{ $t(filterIndex + '_filter') }}
-        </h5>
-        <div v-if="filterIndex === 'color'">
-          <color-selector
-            context="category"
-            :attribute_code="filter.attribute_code"
-            code="color"
-            v-for="(color, index) in filter.options"
-            :key="index"
-            :id="color.id"
-            :label="color.label"
-          />
-        </div>
-        <div v-else-if="filter.frontend_input==='price'">
-          <price-slider
-            context="category"
-            code="price"
-            id="price"
-            :price-range="filter.options"
-            content="Price "
-            label="Price Label"
-          />
-        </div>
-        <div v-else-if="isSelector(filter.frontend_input)">
-          <selector
-            context="category"
-            :filter-type="filter.frontend_input"
-            :attribute_code="filter.attribute_code"
-            :code="filter.attribute_code"
-            v-for="(filterOption, index) in filter.options"
-            :key="index"
-            :id="filterOption.id"
-            :label="filterOption.label"
-          />
-        </div>
-        <div v-else>
-          <generic-selector
-            context="category"
-            :attribute_code="filter.attribute_code"
-            class="generic-select mb10 block"
-            :code="filterIndex"
-            v-for="(filterOption, index) in filter.options"
-            :key="index"
-            :id="filterOption.id"
-            :label="filterOption.label"
-          />
-        </div>
+        <i class="material-icons cl-accent mr5">
+          cancel
+        </i>
+        {{ $t('Clear filters') }}
+      </span>
+    </h4>
+    <div
+      v-for="(filter, filterIndex) in availableFilters"
+      :key="filterIndex"
+    >
+      <h5>
+        {{ $t(filterIndex + '_filter') }}
+      </h5>
+      <div v-if="filterIndex === 'color'">
+        <color-selector
+          context="category"
+          :attribute_code="filter.attribute_code"
+          code="color"
+          v-for="(color, index) in filter.options"
+          :key="index"
+          :id="color.id"
+          :label="color.label"
+        />
+      </div>
+      <div v-else-if="filter.frontend_input==='price'">
+        <price-slider
+          context="category"
+          code="price"
+          id="price"
+          :price-range="filter.options"
+          content="Price "
+          label="Price Label"
+        />
+      </div>
+      <div v-else-if="isSelector(filter.frontend_input)">
+        <selector
+          context="category"
+          :filter-type="filter.frontend_input"
+          :attribute_code="filter.attribute_code"
+          :code="filter.attribute_code"
+          v-for="(filterOption, index) in filter.options"
+          :key="index"
+          :id="filterOption.id"
+          :label="filterOption.label"
+        />
+      </div>
+      <div v-else>
+        <generic-selector
+          context="category"
+          :attribute_code="filter.attribute_code"
+          class="generic-select mb10 block"
+          :code="filterIndex"
+          v-for="(filterOption, index) in filter.options"
+          :key="index"
+          :id="filterOption.id"
+          :label="filterOption.label"
+        />
       </div>
     </div>
   </div>
@@ -141,3 +142,20 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+  &__header {
+    justify-content: space-between;
+    min-height: 47px;
+    flex-wrap: wrap;
+    &__clear {
+      font-size: .8em;
+      min-width: 102px;
+      @media only screen and (min-width: 768px) and (max-width: 770px) {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+</style>

@@ -17,6 +17,7 @@
 
 <script>
 import NoSSR from 'vue-no-ssr'
+import isEqual from 'lodash-es/isEqual'
 
 const PriceSliderComponents = {}
 
@@ -63,6 +64,7 @@ export default {
   data () {
     return {
       active: false,
+      remove: false,
       value: this.priceRange,
       currencySign: this.$store.state.config.i18n.currencySign,
       priceSliderConfig: this.$store.state.config.layeredNavigation.priceSliderOptions
@@ -88,10 +90,11 @@ export default {
       let from = val[0]
       let to = val[1]
       let id = val[1]
+      this.remove = isEqual(val, this.priceRange)
       this.switchFilter(id, from, to)
     },
     switchFilter (id, from, to) {
-      this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, from: from, to: to, label: this.currencySign + ' ' + from + ' - ' + this.currencySign + ' ' + to })
+      this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, from: from, to: to, label: this.currencySign + ' ' + from + ' - ' + this.currencySign + ' ' + to, remove: this.remove })
     },
     resetPriceSlider () {
       if (this.$refs.priceSlider) {

@@ -39,6 +39,8 @@ const catalogProductExtendedModule = {
       }
       let t0 = new Date().getTime()
   
+      const priceSliderAttribute = rootStore.state.config.layeredNavigation.priceSliderAttribute
+
       const precachedQuery = searchProductQuery
       let productPromise = rootStore.dispatch('product/list', {
         query: precachedQuery,
@@ -68,10 +70,9 @@ const catalogProductExtendedModule = {
           return []
         } else {
           //set min and max prices for this category
-          const minPrice = Math.floor(Math.min.apply(Math, res.items.map((attribute) => { return attribute.priceInclTax })))
-          const maxPrice = Math.ceil(Math.max.apply(Math, res.items.map((attribute) => { return attribute.priceInclTax })))
+          const minPrice = Math.floor(Math.min.apply(Math, res.items.map((attribute) => { return attribute[priceSliderAttribute] })))
+          const maxPrice = Math.ceil(Math.max.apply(Math, res.items.map((attribute) => { return attribute[priceSliderAttribute] })))
           const priceRange = [minPrice, maxPrice]
-          
           if (rootStore.state.config.products.filterUnavailableVariants && rootStore.state.config.products.configurableChildrenStockPrefetchStatic) { // prefetch the stock items
             const skus = []
             let prefetchIndex = 0

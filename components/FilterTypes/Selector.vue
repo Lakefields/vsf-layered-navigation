@@ -1,6 +1,7 @@
 <template>
   <div
-    :class="{'no-products-left': noProductsLeft, 'filter-label': true}">
+    v-if="!noProductsLeft"
+    :class="{'filter-label': true}">
     <span
       :class="{'active': active, 'filter-label': true}"
       @click="switchFilter(id, label)"

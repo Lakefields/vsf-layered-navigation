@@ -44,7 +44,7 @@ export default {
 <style lang="scss">
   @import '~theme/css/variables/colors';
   @import '~theme/css/helpers/functions/color';
-  $color-silver: color(silver);
+  $color-puerto-rico: color(puerto-rico);
   $color-white: color(white);
 
   span.active-filter-label {
@@ -52,7 +52,7 @@ export default {
     line-height: 30px;
     color: $color-white;
     display: inline-block;
-    background-color: $color-silver;
+    background-color: $color-puerto-rico;
     margin: 0px 10px 0px 0px;
     padding: 0px 15px;
     i {

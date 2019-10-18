@@ -4,7 +4,7 @@
       v-for="(attributes, filter) in activeFilters"
       :key="filter"
     >
-      <span class="filter">{{ $t(filter + '_filter') }}</span>
+      <span class="block pb10 weight-700">{{ $t(filter + '_filter') }}</span>
       <active-filter :attributes="attributes" />
     </div>
   </div>
@@ -35,8 +35,6 @@ export default {
 .active-filters {
   float: left;
   width: 100%;
-  margin: 0;
-  padding: 0;
   > div {
     float: left;
     margin-bottom: 10px;

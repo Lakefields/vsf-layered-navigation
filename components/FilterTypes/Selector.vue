@@ -1,15 +1,19 @@
 <template>
-  <div
-    :class="{'no-products-left': noProductsLeft, 'filter-label': true}">
-    <span
-      :class="{'active': active, 'filter-label': true}"
-      @click="switchFilter(id, label)"
-      :aria-label="$t('Select ') + label"
+  <transition name="fade">
+    <div
+      :class="{'filter-label': true}"
+      v-if="showFilterOption"
     >
-      {{ label }}
-    </span>
-    <span v-if="showProductsLeftCounter" class="product-counter">{{ productsLeftCounter }}</span>
-  </div>
+      <span
+        :class="{'active': active, 'filter-label': true}"
+        @click="switchFilter(id, label)"
+        :aria-label="$t('Select ') + label"
+      >
+        {{ label }}
+      </span>
+      <span v-if="showProductsLeftCounter" class="product-counter">{{ productsLeftCounter }}</span>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -46,6 +50,12 @@ export default {
     },
     noProductsLeft () {
       return this.productLeftCounterEnabled && this.productsLeftCounter === 0
+    },
+    hasYield () {
+      return this.productsLeftCounter < this.currentProductList.length
+    },
+    showFilterOption () {
+      return this.active || (this.hasYield && !this.noProductsLeft)
     }
   },
   methods: {

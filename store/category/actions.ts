@@ -40,6 +40,7 @@ const catalogProductExtendedModule = {
       let t0 = new Date().getTime()
   
       const priceSliderAttribute = rootStore.state.config.layeredNavigation.priceSliderAttribute
+      const sortFilterOptions = (rootStore.state.config.layeredNavigation.hasOwnProperty('sortFilterOptionsAlphabetically')) ? rootStore.state.config.layeredNavigation.sortFilterOptionsAlphabetically : true
 
       const precachedQuery = searchProductQuery
       let productPromise = rootStore.dispatch('product/list', {
@@ -121,13 +122,15 @@ const catalogProductExtendedModule = {
                     })
                   }
                 });
-                filterOptions = [...filterOptions].sort((a, b) => { return a.label - b.label })
+                if(sortFilterOptions) {
+                  filterOptions.sort((a, b) => { return (a.label > b.label) ? 1 : -1 })
+                }
 
               } else { // special case is range filter for prices
                 if (res.aggregations['agg_range_' + attrToFilter]) {
                   filterOptions = priceRange
                 }
-              }
+              }            
 
               let filterData: FilterType = {
                 attribute_id: attributeData.attribute_id,

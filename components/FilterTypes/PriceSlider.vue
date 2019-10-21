@@ -114,6 +114,8 @@ export default {
 
   .price-slider-container {
     padding-bottom: 50px;
+    position: relative;
+    z-index: 1;
   }
 
   .price-selector {

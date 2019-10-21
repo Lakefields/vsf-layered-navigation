@@ -20,51 +20,6 @@
 import Filter from './Filter'
 
 export default {
-  computed: {
-    availableFilters () {
-      return this.$store.state.category.filters.available
-    },
-    currentProductList () {
-      return this.$store.state.product.list.items
-    },
-    productLeftCounterEnabled () {
-      return this.$store.state.config.layeredNavigation.enableProductsLeftCounter
-    },
-    productsLeftCounter () {
-      let countProducts
-      for (let attributeCode in this.availableFilters) {
-        if (attributeCode === this.code) {
-          let attributeId = this.id
-          countProducts = this.currentProductList.filter(product => {
-            if (product[attributeCode] === null) {
-              return false
-            }
-            return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(attributeId) !== -1 : product[attributeCode] === parseInt(this.id)
-          })
-        }
-      }
-      return countProducts.length
-    },
-    showProductsLeftCounter () {
-      return this.productLeftCounterEnabled && this.productsLeftCounter > 0
-    },
-    noProductsLeft () {
-      return this.productLeftCounterEnabled && this.productsLeftCounter === 0
-    },
-    hasYield () {
-      return this.productsLeftCounter < this.currentProductList.length
-    },
-    showFilterOption () {
-      return this.active || (this.hasYield && !this.noProductsLeft)
-    }
-  },
-  methods: {
-    switchFilter (id, label) {
-      if (!this.noProductsLeft) {
-        this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, label: label })
-      }
-    }
-  },
   mixins: [Filter]
 }
 </script>

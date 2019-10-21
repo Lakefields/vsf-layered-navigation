@@ -1,21 +1,26 @@
 <template>
-  <button
-    :class="['mr10 mb5 bg-cl-transparent brdr-1 brdr-circle brdr-cl-transparent :brdr-cl-bg-primary relative inline-flex pointer color', active ? 'active' : '']"
-    @click="switchFilter(id, label)"
-    :aria-label="label"
+  <div
+    class="inline-flex"
+    v-if="showFilterOption"
   >
-    <span
-      class="absolute brdr-circle brdr-1 brdr-cl-secondary block color-inside"
-      :style="colorFrom(label)"
-    />
-  </button>
+    <button
+      :class="['mr10 mb5 bg-cl-transparent brdr-1 brdr-circle brdr-cl-transparent :brdr-cl-bg-primary relative pointer color', active ? 'active' : '']"
+      @click="switchFilter(id, label)"
+      :aria-label="label"
+    >
+      <span
+        class="absolute brdr-circle brdr-1 brdr-cl-secondary block color-inside"
+        :style="colorFrom(label)"
+      />
+    </button>
+  </div>
 </template>
 
 <script>
 import Filter from './Filter'
 import rootStore from '@vue-storefront/core/store'
+
 export default {
-  mixins: [Filter],
   methods: {
     colorFrom (label) {
       if (rootStore.state.config.products.colorMappings) {
@@ -30,7 +35,8 @@ export default {
         return 'background-color: ' + label
       }
     }
-  }
+  },
+  mixins: [Filter]
 }
 </script>
 

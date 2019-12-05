@@ -2,7 +2,6 @@
   <transition name="fade">
     <div
       :class="{'filter-label': true}"
-      v-if="showFilterOption"
     >
       <span
         :class="{'active': active, 'filter-label': true}"

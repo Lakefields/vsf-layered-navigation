@@ -5,12 +5,9 @@ import { ProductCustomOption } from '@vue-storefront/core/modules/catalog/compon
 export default {
   mixins: [ProductCustomOption],
   computed: {
-    ...mapGetters('category', ['getActiveCategoryFilters']),
+    ...mapGetters('category', ['getActiveCategoryFilters', 'getAvailableCategoryFilters']),
     activeFilters () {
       return this.getActiveCategoryFilters
-    },
-    availableFilters () {
-      return this.$store.state.category.filters.available
     },
     currentProductList () {
       return this.$store.state.product.list.items
@@ -20,7 +17,8 @@ export default {
     },
     productsLeftCounter () {
       let countProducts
-      for (let attributeCode in this.availableFilters) {
+      let countProductsByFilter
+      for (let attributeCode in this.getAvailableCategoryFilters) {
         if (attributeCode === this.code) {
           let attributeId = this.id
           countProducts = this.currentProductList.filter(product => {
@@ -28,9 +26,13 @@ export default {
               return false
             }
             return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(attributeId) !== -1 : product[attributeCode] === parseInt(this.id)
-          })
+          })     
+          if(countProducts.length > 0){
+            countProductsByFilter.push(countProducts.length)
+          }     
         }
-      }
+        this.$bus.$emit('filter-option-visibilty', { attribute_code: attributeCode, countProducts: countProductsByFilter })
+      }      
       return countProducts.length
     },
     showProductsLeftCounter () {

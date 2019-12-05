@@ -5,7 +5,6 @@ import chunk from 'lodash-es/chunk'
 import trim from 'lodash-es/trim'
 import toString from 'lodash-es/toString'
 import { optionLabel } from '@vue-storefront/core/modules/catalog/helpers/optionLabel'
-import { currentStoreView } from '@vue-storefront/core/lib/multistore'
 import FilterType from '../../types/FilterType'
 
 const catalogProductExtendedModule = {
@@ -118,7 +117,8 @@ const catalogProductExtendedModule = {
                   if (trim(label) !== '') { // is there any situation when label could be empty and we should still support it?
                     filterOptions.push({
                       id: key,
-                      label: label
+                      label: label,
+                      display: true
                     })
                   }
                 });

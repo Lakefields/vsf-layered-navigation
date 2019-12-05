@@ -17,54 +17,11 @@
       v-for="(filter, filterIndex) in availableFilters"
       :key="filterIndex"
     >
-      <h5>
-        {{ $t(filterIndex + '_filter') }}
-      </h5>
-      <div v-if="filterIndex === 'color'">
-        <color-selector
-          context="category"
-          :attribute_code="filter.attribute_code"
-          code="color"
-          v-for="(color, index) in filter.options"
-          :key="index"
-          :id="color.id"
-          :label="color.label"
-        />
-      </div>
-      <div v-else-if="filter.frontend_input==='price'">
-        <price-slider
-          context="category"
-          code="price"
-          id="price"
-          :price-range="filter.options"
-          content="Price "
-          label="Price Label"
-        />
-      </div>
-      <div v-else-if="isSelector(filter.frontend_input)">
-        <selector
-          context="category"
-          :filter-type="filter.frontend_input"
-          :attribute_code="filter.attribute_code"
-          :code="filter.attribute_code"
-          v-for="(filterOption, index) in filter.options"
-          :key="index"
-          :id="filterOption.id"
-          :label="filterOption.label"
-        />
-      </div>
-      <div v-else>
-        <generic-selector
-          context="category"
-          :attribute_code="filter.attribute_code"
-          class="generic-select mb10 block"
-          :code="filterIndex"
-          v-for="(filterOption, index) in filter.options"
-          :key="index"
-          :id="filterOption.id"
-          :label="filterOption.label"
-        />
-      </div>
+      <product-filter
+        :filter-index="filterIndex"
+        :filter="filter"
+        :limit="limit"
+      />
     </div>
   </div>
 </template>
@@ -72,19 +29,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
-import GenericSelector from './FilterTypes/GenericSelector'
-import ColorSelector from './FilterTypes/ColorSelector'
-import Selector from './FilterTypes/Selector'
-import PriceSlider from './FilterTypes/PriceSlider'
 import pickBy from 'lodash-es/pickBy'
+import map from 'lodash-es/map'
+import ProductFilter from './ProductFilter'
 
 export default {
   name: 'CategorySidebar',
   components: {
-    GenericSelector,
-    ColorSelector,
-    Selector,
-    PriceSlider
+    ProductFilter
   },
   props: {
     filters: {
@@ -94,7 +46,9 @@ export default {
   },
   data () {
     return {
-      selectorFilterTypes: ['select', 'multiselect']
+      selectorFilterTypes: ['select', 'multiselect'],
+      limit: 10,
+      filterExpand: false
     }
   },
   mounted () {
@@ -119,6 +73,12 @@ export default {
     },
     activeFiltersCount () {
       return pickBy(this.activeFilters, (activeFilter) => { return (activeFilter.length) })
+    },
+    remainingFilterOptions () {
+      return this.filter.options.length - this.limit
+    },
+    filterExpanderMessage () {
+      return (this.filterExpand) ? i18n.t('Show less filter options') : (this.remainingFilterOptions > 1) ? i18n.t('Show {remainingFilterOptions} more filter options', { remainingFilterOptions: this.remainingFilterOptions }) : i18n.t('Show {remainingFilterOptions} more filter option', { remainingFilterOptions: this.remainingFilterOptions })
     }
   },
   methods: {

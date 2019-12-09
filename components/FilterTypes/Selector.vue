@@ -1,18 +1,17 @@
 <template>
-  <transition name="fade">
-    <div
-      :class="{'filter-label': true}"
+  <div
+    :class="{'filter-label': true}"
+    v-if="showFilterOption"
+  >
+    <span
+      :class="{'active': active, 'filter-label': true}"
+      @click="switchFilter(id, label)"
+      :aria-label="$t('Select ') + label"
     >
-      <span
-        :class="{'active': active, 'filter-label': true}"
-        @click="switchFilter(id, label)"
-        :aria-label="$t('Select ') + label"
-      >
-        {{ label }}
-      </span>
-      <span v-if="showProductsLeftCounter" class="product-counter">{{ productsLeftCounter }}</span>
-    </div>
-  </transition>
+      {{ label }}
+    </span>
+    <span v-if="showProductsLeftCounter" class="product-counter">{{ productsLeftCounter }}</span>
+  </div>
 </template>
 
 <script>

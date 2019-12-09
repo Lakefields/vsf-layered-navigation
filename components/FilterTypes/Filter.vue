@@ -10,14 +10,14 @@ export default {
       return this.getActiveCategoryFilters
     },
     currentProductList () {
-      return this.$store.state.product.list.items
+      return this.$store.getters['product/list']
     },
     productLeftCounterEnabled () {
       return this.$store.state.config.layeredNavigation.enableProductsLeftCounter
     },
     productsLeftCounter () {
       let countProducts
-      let countProductsByFilter
+      let countProductsByFilter = []
       for (let attributeCode in this.getAvailableCategoryFilters) {
         if (attributeCode === this.code) {
           let attributeId = this.id
@@ -27,12 +27,8 @@ export default {
             }
             return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(attributeId) !== -1 : product[attributeCode] === parseInt(this.id)
           })     
-          if(countProducts.length > 0){
-            countProductsByFilter.push(countProducts.length)
-          }     
         }
-        this.$bus.$emit('filter-option-visibilty', { attribute_code: attributeCode, countProducts: countProductsByFilter })
-      }      
+      }  
       return countProducts.length
     },
     showProductsLeftCounter () {
@@ -79,6 +75,7 @@ export default {
           this.active = false
         }
       }
+
     },
     switchFilter (id, label) {
       if (!this.noProductsLeft) {

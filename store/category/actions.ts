@@ -117,8 +117,7 @@ const catalogProductExtendedModule = {
                   if (trim(label) !== '') { // is there any situation when label could be empty and we should still support it?
                     filterOptions.push({
                       id: key,
-                      label: label,
-                      display: true
+                      label: label
                     })
                   }
                 });

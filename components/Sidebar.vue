@@ -20,7 +20,7 @@
       <product-filter
         :filter-index="filterIndex"
         :filter="filter"
-        :limit="limit"
+        :limit="filterOptionDisplayLimit"
       />
     </div>
   </div>
@@ -28,7 +28,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
+import { buildFilterProductsQueryByFilterArray } from 'src/modules/vsf-layered-navigation/helpers/productsQueryByFilter'
 import pickBy from 'lodash-es/pickBy'
 import map from 'lodash-es/map'
 import ProductFilter from './ProductFilter'
@@ -47,11 +47,11 @@ export default {
   data () {
     return {
       selectorFilterTypes: ['select', 'multiselect'],
-      limit: 10,
       filterExpand: false
     }
   },
   mounted () {
+    this.$bus.$emit('product-list-updated')
     this.resetAllFilters()
   },
   computed: {
@@ -63,30 +63,24 @@ export default {
       return pickBy(this.filters, (filter) => { return (filter.options.length) })
     },
     currentProductList () {
-      return this.$store.state.product.list.items
+      return this.$store.getters['product/list']
     },
     activeFilters () {
       return this.getActiveCategoryFilters
+    },
+    filterOptionDisplayLimit () {
+      return this.$store.state.config.layeredNavigation.filterOptionsDisplayLimit
     },
     hasActiveFilters () {
       return Object.keys(this.activeFilters).length !== 0
     },
     activeFiltersCount () {
       return pickBy(this.activeFilters, (activeFilter) => { return (activeFilter.length) })
-    },
-    remainingFilterOptions () {
-      return this.filter.options.length - this.limit
-    },
-    filterExpanderMessage () {
-      return (this.filterExpand) ? i18n.t('Show less filter options') : (this.remainingFilterOptions > 1) ? i18n.t('Show {remainingFilterOptions} more filter options', { remainingFilterOptions: this.remainingFilterOptions }) : i18n.t('Show {remainingFilterOptions} more filter option', { remainingFilterOptions: this.remainingFilterOptions })
     }
   },
   methods: {
     sortById (filters) {
       return [...filters].sort((a, b) => { return a.id - b.id })
-    },
-    isSelector (filterType) {
-      return this.selectorFilterTypes.includes(filterType)
     },
     resetAllFilters () {
       if (this.hasActiveFilters) {
@@ -96,7 +90,9 @@ export default {
         this.$store.dispatch('category/mergeSearchOptions', {
           searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.activeFilters)
         })
-        this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery)
+        this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
+          this.$bus.$emit('product-list-updated')
+        })
       }
     }
   }

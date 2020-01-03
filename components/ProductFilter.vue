@@ -3,9 +3,7 @@
     class="product-filter"
     v-if="showFilter()"
   >
-    <h4>
-      {{ $t(filterIndex + '_filter') }}
-    </h4>
+    <h4>{{ $t(filterIndex + '_filter') }}</h4>
     <div v-if="filterIndex === 'color'">
       <color-selector
         context="category"
@@ -133,7 +131,7 @@ export default {
       return this.availableFilterOptions - this.limit
     },
     filterExpanderMessage () {
-      return (this.filterExpand) ? i18n.t('Show less filter options') : (this.remainingFilterOptions > 1) ? i18n.t('Show {remainingFilterOptions} more filter options', { remainingFilterOptions: this.remainingFilterOptions }) : i18n.t('Show {remainingFilterOptions} more filter option', { 'remainingFilterOptions': this.remainingFilterOptions })
+      return (this.filterExpand) ? i18n.t('Show less filter options') : i18n.t('Show more filter options ({remainingFilterOptions})', { remainingFilterOptions: this.remainingFilterOptions })
     },
     setMaxHeight () {
       return (!this.filterExpand) ? (this.filterOptionElHeight * this.limit) + 'px' : (this.filterOptionElHeight * this.availableFilterOptions) + 'px'

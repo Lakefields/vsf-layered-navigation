@@ -1,83 +1,42 @@
 <template>
   <div class="sidebar">
-    <div class="filters">
-      <h4>
-        {{ $t('Filter') }}
-      </h4>
-      <div
-        v-for="(filter, filterIndex) in availableFilters"
-        :key="filterIndex"
+    <h4 class="sidebar__header relative mt35 mb20 flex">
+      <span> {{ $t('Filter') }} </span>
+      <span
+        class="weight-400 sidebar__header__clear pointer sans-serif flex lh25"
+        @click="resetAllFilters"
+        v-show="hasActiveFilters"
       >
-        <h5>
-          {{ $t(filterIndex + '_filter') }}
-        </h5>
-        <div v-if="filterIndex === 'color'">
-          <color-selector
-            context="category"
-            :attribute_code="filter.attribute_code"
-            code="color"
-            v-for="(color, index) in filter.options"
-            :key="index"
-            :id="color.id"
-            :label="color.label"
-          />
-        </div>
-        <div v-else-if="filter.frontend_input==='price'">
-          <price-slider
-            context="category"
-            code="price"
-            :id="getMaxPrice"
-            :from="getMinPrice"
-            :to="getMaxPrice"
-            content="Price "
-            label="Price Label"
-          />
-        </div>
-        <div v-else-if="isSelector(filter.frontend_input)">
-          <selector
-            context="category"
-            :filter-type="filter.frontend_input"
-            :attribute_code="filter.attribute_code"
-            :code="filter.attribute_code"
-            v-for="(filterOption, index) in filter.options"
-            :key="index"
-            :id="filterOption.id"
-            :label="filterOption.label"
-          />
-        </div>
-        <div v-else>
-          <generic-selector
-            context="category"
-            :attribute_code="filter.attribute_code"
-            class="generic-select mb10 block"
-            :code="filterIndex"
-            v-for="(filterOption, index) in filter.options"
-            :key="index"
-            :id="filterOption.id"
-            :label="filterOption.label"
-          />
-        </div>
-      </div>
+        <i class="material-icons cl-accent mr5">
+          cancel
+        </i>
+        {{ $t('Clear filters') }}
+      </span>
+    </h4>
+    <div
+      v-for="(filter, filterIndex) in availableFilters"
+      :key="filterIndex"
+    >
+      <product-filter
+        :filter-index="filterIndex"
+        :filter="filter"
+        :limit="filterOptionDisplayLimit"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { buildFilterProductsQuery } from '@vue-storefront/core/helpers'
 import { mapGetters } from 'vuex'
-import GenericSelector from './FilterTypes/GenericSelector'
-import ColorSelector from './FilterTypes/ColorSelector'
-import Selector from './FilterTypes/Selector'
-import PriceSlider from './FilterTypes/PriceSlider'
+import { buildFilterProductsQueryByFilterArray } from 'src/modules/vsf-layered-navigation/helpers/productsQueryByFilter'
 import pickBy from 'lodash-es/pickBy'
+import map from 'lodash-es/map'
+import ProductFilter from './ProductFilter'
 
 export default {
   name: 'CategorySidebar',
   components: {
-    GenericSelector,
-    ColorSelector,
-    Selector,
-    PriceSlider
+    ProductFilter
   },
   props: {
     filters: {
@@ -87,8 +46,13 @@ export default {
   },
   data () {
     return {
-      selectorFilterTypes: ['select', 'multiselect']
+      selectorFilterTypes: ['select', 'multiselect'],
+      filterExpand: false
     }
+  },
+  mounted () {
+    this.$bus.$emit('product-list-updated')
+    this.resetAllFilters()
   },
   computed: {
     ...mapGetters('category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery']),
@@ -99,31 +63,55 @@ export default {
       return pickBy(this.filters, (filter) => { return (filter.options.length) })
     },
     currentProductList () {
-      return this.$store.state.product.list.items
-    },
-    getMaxPrice () {
-      return Math.max.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
-    },
-    getMinPrice () {
-      return Math.min.apply(Math, this.currentProductList.map((attribute) => { return attribute.priceInclTax }))
+      return this.$store.getters['product/list']
     },
     activeFilters () {
       return this.getActiveCategoryFilters
+    },
+    filterOptionDisplayLimit () {
+      return this.$store.state.config.layeredNavigation.filterOptionsDisplayLimit
+    },
+    hasActiveFilters () {
+      return Object.keys(this.activeFilters).length !== 0
+    },
+    activeFiltersCount () {
+      return pickBy(this.activeFilters, (activeFilter) => { return (activeFilter.length) })
     }
   },
   methods: {
     sortById (filters) {
       return [...filters].sort((a, b) => { return a.id - b.id })
     },
-    isSelector (filterType) {
-      return this.selectorFilterTypes.includes(filterType)
-    },
     resetAllFilters () {
-      this.$bus.$emit('filter-reset')
-      this.$store.dispatch('category/resetFilters')
-      this.$store.dispatch('category/searchProductQuery', buildFilterProductsQuery(this.category, this.activeFilters))
-      this.$store.dispatch('category/products', {searchProductQuery: this.getCurrentCategoryProductQuery})
+      if (this.hasActiveFilters) {
+        this.$bus.$emit('filter-reset')
+        this.$store.dispatch('category/resetFilters')
+        this.$store.dispatch('category/searchProductQuery', {})
+        this.$store.dispatch('category/mergeSearchOptions', {
+          searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.activeFilters)
+        })
+        this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
+          this.$bus.$emit('product-list-updated')
+        })
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+  &__header {
+    justify-content: space-between;
+    min-height: 47px;
+    flex-wrap: wrap;
+    &__clear {
+      font-size: .8em;
+      min-width: 102px;
+      @media only screen and (min-width: 768px) and (max-width: 770px) {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+</style>

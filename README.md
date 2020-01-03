@@ -1,30 +1,71 @@
 # Layered Navigation Module
-Multiselect filters in Vue Storefront with Price Slider and active filters
+Advanced layered navigation module for filtering the catalog in **VSF 1.10.5**
 
-![vsf-layered-navigation-demo](https://user-images.githubusercontent.com/26965893/56032629-ee4ff700-5d22-11e9-9795-8b813f3dab55.png)
-Image shown above is a demo with the catalog of https://demo.vuestorefront.io/ this module really comes in to play when you integrate it to your custom theme with many more filters for the productlist
+![vsf-ln-1](https://user-images.githubusercontent.com/26965893/71719124-9bbcea80-2e1d-11ea-9a40-9d00b023fda4.png)
+image shown above 
 
-# Purpose
-We created this module to make searching the catalog a better experience, there are a lot more features to come and we'll add these features to this module when we finished development on them.\
-Are you missing features you need, please feel free to contact us via https://www.getnoticed.nl/
+# Better and more complete then before
+We created this module last year to make searching the catalog a better experience.
+
+After winning [the Market Place challenge](https://medium.com/the-vue-storefront-journal/winners-of-the-vue-storefront-marketplace-challenge-fa04025c9a34 "the Market Place challenge") last april we kept on developing new features and fix a few bugs we came across. Thank you for creating issues in this repository and adressing bugs or request for new features.
+
+These are the improvements we added for this version.
+
+* Price slider only filters on drag, not on click anymore (unexpected behaviour)
+* Only set 1 price range, not multiple like before
+* Define which price attribute you want to use the price slider for
+* Add priceslider display options as config properties (see below for details)
+* Fix priceslider reset on route changes
+* Hide filteroptions without yield, (no filter options with same result as the current product list total)
+* Hide filter options with no results
+* Hide entire filter if no filteroption would change the current product list
+* Fix bug where a filter would stay in the active filters, altough there were no active filter options
+* Now the clear all filters button works for all filers
+* Add option to order filter options alphabetically
+* Add possibility to show a number op filter options, with a toggle feature to show all filter options - for this to work set the height of the filteroption element and the number for initial display
 
 # Installation
 Follow these steps to install this module.
 
-1. Clone this git repository from within your vue-storefront root folder
-1. **Run yarn to install vue slider component** for the price silder filter type
-1. Add the config properties
+In your project's `src/modules` folder run:
 
-```shell
-git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git src/modules/layered-navigation
+```shell  
+git clone git@github.com:GetNoticedNL/vsf-layered-navigation.git
 ```
+
+After that add the following config properties to your `config/local.json` file:
 
 ```
 "layeredNavigation": {
-  "enableProductsLeftCounter": true,
-  "pagePortionSize": 200
-},
+    "enableProductsLeftCounter": true,
+    "filterOptionsDisplayLimit": 8,
+    "filterOptionElHeight": 30,
+    "pagePortionSize": 75,
+    "sortFilterOptionsAlphabetically": true,
+    "priceSliderAttribute": "priceInclTax",
+    "priceSliderOptions": {
+      "clickable": false,
+      "height": 2,
+        "bg-style": {
+          "backgroundColor": "#f2f2f2"
+        },
+        "tooltip-dir": ["bottom", "bottom"],
+        "formatter": "€ {value}",
+        "process-style": {
+          "backgroundColor": "#4dba87",
+          "fontWeight": 700
+        },
+        "tooltip-style": {
+          "backgroundColor": "#4dba87",
+          "color": "#ffffff",
+          "border-color": "#4dba87",
+          "padding": "7px 10px"
+        }
+    }
+  },
 ```
+
+Run `yarn` to install the 'vue-slider-component' for the priceslider.
 
 Make sure to add your desired defaultFilters in your local config \
 **For default theme this is**
@@ -62,7 +103,7 @@ And add:
 
 ```js
 ...
-import { layeredNavigationModule } from './layered-navigation'
+import { layeredNavigationModule } from './vsf-layered-navigation'
 extendModule(layeredNavigationModule)
 ```
 
@@ -72,128 +113,8 @@ Open `src/themes/default/pages/Category.vue`
 And overwrite or add the missing parts from `theme-implementation/pages/Category.vue` in this repository, we've added an example of a theme implementation for the current default theme.
 Don't hesitate to contact us to help you with implementing this module in your theme.
 
-The important parts you need to have in your themes `pages/Category.vue` are:
-```js
-import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
-import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
-import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
-```
+Especially take notice of the Sidebar component, ActiveFilters component and the methods when you implement it in your own themes Category page.
 
-Add `ActiveFilters` components:
-
-```js
-...
-components: {
-  ...
-  ActiveFilters
-}
-```
-
-For showing the active filters please add the component to your markup:
-```vue
-<active-filters :filters="filters.available" />
-```
-
-Add the `pagePortionSize` config property from this module to the preSyncData
-
-```js
-preAsyncData ({ store, route }) {
-  store.dispatch('category/setSearchOptions', {
-    populateAggregations: true,
-    store: store,
-    route: route,
-    current: 0,
-    perPage: store.state.config.layeredNavigation.pagePortionSize,
-    sort: store.state.config.entities.productList.sort,
-    filters: store.state.config.products.defaultFilters,
-    includeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.includeFields : null,
-    excludeFields: store.state.config.entities.optimize && Vue.prototype.$isServer ? store.state.config.entities.productList.excludeFields : null,
-    append: false
-  })
-}
-```
-
-Make sure to add the onFilterChanged and onSortOrderChanged to your methods, the helper `buildFilterProductsQueryByFilterArray` is used in these methods. This helper takes care to build the query with multiple filteroptions.
-
-```js
-...
-methods: {
-  ...
-onFilterChanged (filterOption) {
-    this.pagination.current = 0
-    let filterData = []
-    let filter = filterOption.attribute_code
-    let OptionId = filterOption.id
-
-    filterData = Object.assign([], this.filters.chosen[filter])
-
-    if (filterData.filter(option => option.id === OptionId).length === 0) {
-      filterData.push(filterOption)
-    } else {
-      let index = filterData.map((option) => option.id).indexOf(OptionId)
-      if (index > -1) {
-        filterData.splice(index, 1)
-      }
-    }
-    this.filters.chosen[filter] = filterData
-    let filterQr = buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
-
-    const filtersConfig = Object.assign({}, this.filters.chosen) // create a copy because it will be used asynchronously (take a look below)
-    this.mergeSearchOptions({
-      populateAggregations: false,
-      searchProductQuery: filterQr,
-      current: this.pagination.current,
-      perPage: this.$store.state.config.layeredNavigation.pagePortionSize,
-      configuration: filtersConfig,
-      append: false,
-      includeFields: null,
-      excludeFields: null
-    })
-    this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
-    }) // because already aggregated
-  },
-  onSortOrderChanged (param) {
-    this.pagination.current = 0
-    if (param.attribute) {
-      const filtersConfig = Object.assign({}, this.filters.chosen) // create a copy because it will be used asynchronously (take a look below)
-      let filterQr = buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
-      this.mergeSearchOptions({
-        sort: param.attribute,
-        searchProductQuery: filterQr,
-        current: this.pagination.current,
-        perPage: this.$store.state.config.layeredNavigation.pagePortionSize,
-        configuration: filtersConfig,
-        append: false,
-        includeFields: null,
-        excludeFields: null
-      })
-      this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
-      })
-    } else {
-      this.notify()
-    }
-  },
-  pullMoreProducts () {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) return
-    let current = this.getCurrentCategoryProductQuery.current + this.getCurrentCategoryProductQuery.perPage
-    this.mergeSearchOptions({
-      append: true,
-      route: this.$route,
-      store: this.$store,
-      current
-    })
-    this.pagination.current = this.getCurrentCategoryProductQuery.current
-    this.pagination.perPage = this.getCurrentCategoryProductQuery.perPage
-    if (this.getCurrentCategoryProductQuery.current <= this.productsTotal) {
-      this.mergeSearchOptions({
-        searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.filters.chosen)
-      })
-      return this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery)
-    }
-  },
-  ...
-}
-```
 
 # A note about the 'productsLeftCounter'
 This is experimental, with the 'productsleftcounter' enabled, the amount of results for a filteroption is added in the filters sidebar. If the filter option should result in an empty product list, the filter option is faded and not clickable.
@@ -209,7 +130,8 @@ Remove `import '@vue-storefront/core/lib/passive-listeners'` from `src/themes/de
 
 # Support
 This module is built to enable multiple filter options per attribute in mind.\
-Use at your own responsibility in your project. This module is tested on Vue Storefront 1.8.\
+Use at your own responsibility in your project. This module is tested on Vue Storefront 1.10.5.\
+The catalog module is practically rewritten in VSF 1.11, right now we are investigating if we can add features of this module for VSF 1.11.\
 Read above about the experimental state of the 'productsleftcounter' option.\
 If you need any assistance or want to do feature requests you can turn to these channels:
 

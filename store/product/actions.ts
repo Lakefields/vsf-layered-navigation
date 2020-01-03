@@ -52,6 +52,18 @@ const catalogProductExtendedModule = {
               let selectedVariant = configureProductAsync(context, { product: product, configuration: configuration, selectDefaultVariant: false })
               Object.assign(product, selectedVariant)
             }
+            if (product.url_path) {
+              rootStore.dispatch('url/registerMapping', {
+                url: product.url_path,
+                routeData: {
+                  params: {
+                    'parentSku': product.parentSku,
+                    'slug': product.slug
+                  },
+                  'name': product.type_id + '-product'
+                }
+              }, { root: true })
+            }
           }
         }
         return calculateTaxes(resp.items, context).then((updatedProducts) => {

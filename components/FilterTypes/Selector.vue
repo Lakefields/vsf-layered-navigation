@@ -1,6 +1,8 @@
 <template>
   <div
-    :class="{'no-products-left': noProductsLeft, 'filter-label': true}">
+    :class="{'filter-label': true}"
+    v-if="showFilterOption"
+  >
     <span
       :class="{'active': active, 'filter-label': true}"
       @click="switchFilter(id, label)"
@@ -16,42 +18,6 @@
 import Filter from './Filter'
 
 export default {
-  computed: {
-    availableFilters () {
-      return this.$store.state.category.filters.available
-    },
-    currentProductList () {
-      return this.$store.state.product.list.items
-    },
-    productLeftCounterEnabled () {
-      return this.$store.state.config.layeredNavigation.enableProductsLeftCounter
-    },
-    productsLeftCounter () {
-      let countProducts
-      for (let attributeCode in this.availableFilters) {
-        if (attributeCode === this.code) {
-          let attributeId = parseInt(this.id)
-          countProducts = this.currentProductList.filter(attribute => {
-            return (typeof attribute[attributeCode] === 'object') ? (attribute[attributeCode].indexOf(attributeId) !== -1) : attribute[attributeCode] === this.id
-          })
-        }
-      }
-      return countProducts.length
-    },
-    showProductsLeftCounter () {
-      return this.productLeftCounterEnabled && this.productsLeftCounter > 0
-    },
-    noProductsLeft () {
-      return this.productLeftCounterEnabled && this.productsLeftCounter === 0
-    }
-  },
-  methods: {
-    switchFilter (id, label) {
-      if (!this.noProductsLeft) {
-        this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, label: label })
-      }
-    }
-  },
   mixins: [Filter]
 }
 </script>

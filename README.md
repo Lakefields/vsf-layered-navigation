@@ -1,7 +1,8 @@
 # Layered Navigation Module
 Advanced layered navigation module for filtering the catalog in **VSF 1.10.5**
 
-![vsf-ln-1](https://user-images.githubusercontent.com/26965893/71719124-9bbcea80-2e1d-11ea-9a40-9d00b023fda4.png)
+## Video demo - see it in action
+[![Watch the demo!](https://user-images.githubusercontent.com/26965893/71731022-fe28e180-2e43-11ea-9946-d5189862b9ec.png)](https://www.youtube.com/watch?v=vfcg_dQ8zYk)
 
 # Better and more complete then before
 We created this module last year to make searching the catalog a better experience.

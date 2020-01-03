@@ -1,9 +1,8 @@
 <template>
   <div id="category">
     <header class="bg-cl-secondary py35 pl20">
-      <div class="container">        
+      <div class="container">
         <breadcrumbs :routes="breadcrumbs.routes" :active-route="category.name" />
-        <active-filters :filters="filters.available" />
         <div class="row middle-sm">
           <h1 class="col-sm-8 category-title mb10">
             {{ category.name }}
@@ -15,6 +14,7 @@
           <div class="sorting col-sm-2 align-right mt50">
             <sort-by :has-label="true" />
           </div>
+          <active-filters :filters="filters.available" />
         </div>
       </div>
       <div class="container">
@@ -69,15 +69,15 @@
 </template>
 
 <script>
+import Category from '@vue-storefront/core/pages/Category'
 import Vue from 'vue'
 import config from 'config'
 import { isServer } from '@vue-storefront/core/helpers'
 import { Logger } from '@vue-storefront/core/lib/logger'
-import { buildFilterProductsQueryByFilterArray } from 'src/modules/layered-navigation/helpers/productsQueryByFilter'
-import Sidebar from 'src/modules/layered-navigation/components/Sidebar'
-import ActiveFilters from 'src/modules/layered-navigation/components/ActiveFilters'
+import { buildFilterProductsQueryByFilterArray } from 'src/modules/vsf-layered-navigation/helpers/productsQueryByFilter'
+import Sidebar from 'src/modules/vsf-layered-navigation/components/Sidebar'
+import ActiveFilters from 'src/modules/vsf-layered-navigation/components/ActiveFilters'
 
-import Category from '@vue-storefront/core/pages/Category'
 // import Sidebar from '../components/core/blocks/Category/Sidebar.vue'
 import ProductListing from '../components/core/ProductListing.vue'
 import Breadcrumbs from '../components/core/Breadcrumbs.vue'
@@ -92,9 +92,9 @@ export default {
     ProductListing,
     Breadcrumbs,
     Sidebar,
+    ActiveFilters,
     SortBy,
-    Columns,
-    ActiveFilters
+    Columns
   },
   data () {
     return {
@@ -117,12 +117,6 @@ export default {
       includeFields: config.entities.optimize && isServer ? config.entities.productList.includeFields : null,
       excludeFields: config.entities.optimize && isServer ? config.entities.productList.excludeFields : null,
       append: false
-    })
-  },
-  async asyncData ({ store, route }) { // this is for SSR purposes to prefetch data - and it's always executed before parent component methods
-    await store.dispatch('category/mergeSearchOptions', { // this is just an example how can you modify the search criteria in child components
-      sort: store.state.config.products.defaultSortBy.attribute + (store.state.config.products.defaultSortBy.order ? ':' + store.state.config.products.defaultSortBy.order : '')
-      // searchProductQuery: builder().query('range', 'price', { 'gt': 0 }).andFilter('range', 'visibility', { 'gte': 2, 'lte': 4 }) // this is an example on how to modify the ES query, please take a look at the @vue-storefront/core/helpers for refernce on how to build valid query
     })
   },
   methods: {
@@ -200,6 +194,7 @@ export default {
         excludeFields: null
       })
       this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
+        this.$bus.$emit('product-list-updated')
       }) // because already aggregated
     },
     onSortOrderChanged (param) {

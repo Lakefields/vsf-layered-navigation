@@ -115,6 +115,7 @@ Don't hesitate to contact us to help you with implementing this module in your t
 
 Especially take notice of the Sidebar component, ActiveFilters component and the methods when you implement it in your own themes Category page.
 
+
 # A note about the 'productsLeftCounter'
 This is experimental, with the 'productsleftcounter' enabled, the amount of results for a filteroption is added in the filters sidebar. If the filter option should result in an empty product list, the filter option is faded and not clickable.
 

@@ -1,15 +1,15 @@
 <template>
   <div>
     <span
-      v-for="(attribute, index) in attributes"
+      v-for="(variant, index) in attributes"
       :key="index"
       class="active active-filter-label"
-      :aria-label="$t('Select ' + attribute.label)"
+      :aria-label="$t('Select ' + variant.label)"
     >
-      {{ attribute.label }}
+      {{ variant.label }}
       <i
         class="material-icons"
-        @click="removeFilter(attribute)">
+        @click="$emit('changeFilter', variant)">
         close
       </i>
     </span>
@@ -25,17 +25,6 @@ export default {
       type: Array,
       required: true,
       default: () => false
-    }
-  },
-  data () {
-    return {
-      context: 'category',
-      active: false
-    }
-  },
-  methods: {
-    removeFilter (attribute) {
-      this.$bus.$emit('filter-changed-' + this.context, { ...attribute, remove: true })
     }
   }
 }

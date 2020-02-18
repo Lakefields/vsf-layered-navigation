@@ -6,7 +6,7 @@
       class="active active-filter-label"
       :aria-label="$t('Select ' + variant.label)"
     >
-      {{ variant.label }}
+      {{ getVariantInfo(variant) }}
       <i
         class="material-icons"
         @click="$emit('changeFilter', variant)">
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import config from 'config'
 
 export default {
   name: 'ActiveFilter',
@@ -25,6 +26,19 @@ export default {
       type: Array,
       required: true,
       default: () => false
+    }
+  },
+  methods: {
+    getVariantInfo (variant) {
+      let variant_label
+      if (variant.attribute_code === 'price') {
+        const currencySign = config.i18n.currencySign
+        const price_range = variant[Object.keys(variant)[0]].split('-')
+        variant_label = currencySign + " " + price_range[0] + " - " + currencySign + " " + price_range[1]
+      } else {
+        variant_label = variant.label
+      }
+      return variant_label
     }
   }
 }

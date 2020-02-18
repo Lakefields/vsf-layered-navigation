@@ -1,11 +1,11 @@
 <template>
   <div class="active-filters">
     <div
-      v-for="(attributes, filter) in activeFilters"
+      v-for="(attributes, filter) in getCurrentFilters"
       :key="filter"
     >
       <span class="block pb10 weight-700">{{ $t(filter + '_filter') }}</span>
-      <active-filter :attributes="attributes" />
+      <active-filter :attributes="attributes" @changeFilter="changeFilter" />
     </div>
   </div>
 </template>
@@ -17,13 +17,18 @@ import ActiveFilter from './ActiveFilter'
 export default {
   name: 'ActiveFilters',
   computed: {
-    ...mapGetters('category', ['getActiveCategoryFilters']),
-    activeFilters () {
-      return this.getActiveCategoryFilters
-    }
+    ...mapGetters({
+      getCurrentFilters: 'category-next/getCurrentFilters'
+    })
   },
   components: {
     ActiveFilter
+  },
+  methods: {
+    async changeFilter (filterVariant) {
+      const variant = (filterVariant.attribute_code !== 'price') ? filterVariant : {...filterVariant, type: 'price', remove: true}
+      this.$store.dispatch('category-next/switchSearchFilters', [variant])
+    }
   }
 }
 </script>

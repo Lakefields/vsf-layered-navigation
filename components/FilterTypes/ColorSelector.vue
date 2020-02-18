@@ -1,31 +1,28 @@
 <template>
-  <div
-    class="inline-flex"
-    v-if="showFilterOption"
+  <button
+    :class="['mr10 mb5 bg-cl-transparent brdr-1 brdr-circle brdr-cl-transparent :brdr-cl-bg-primary relative inline-flex pointer color', isActive ? 'active' : '']"
+    @click="$emit('change', variant)"
+    :aria-label="$t('Select color ') + variant.label"
   >
-    <button
-      :class="['mr10 mb5 bg-cl-transparent brdr-1 brdr-circle brdr-cl-transparent :brdr-cl-bg-primary relative pointer color', active ? 'active' : '']"
-      @click="switchFilter(id, label)"
-      :aria-label="label"
-    >
-      <span
-        class="absolute brdr-circle brdr-1 brdr-cl-secondary block color-inside"
-        :style="colorFrom(label)"
-      />
-    </button>
-  </div>
+    <span
+      class="absolute brdr-circle brdr-1 brdr-cl-secondary block color-inside"
+      :style="colorFrom(variant.label)"
+    />
+  </button>
 </template>
 
 <script>
-import Filter from './Filter'
-import rootStore from '@vue-storefront/core/store'
+import config from 'config'
+import filterMixin from 'src/modules/vsf-layered-navigation/mixins/filterMixin'
 
 export default {
+  mixins: [filterMixin],
   methods: {
     colorFrom (label) {
-      if (rootStore.state.config.products.colorMappings) {
-        if (typeof rootStore.state.config.products.colorMappings[label] !== 'undefined') {
-          label = rootStore.state.config.products.colorMappings[label]
+      if (!label) return ''
+      if (config.products.colorMappings) {
+        if (typeof config.products.colorMappings[label] !== 'undefined') {
+          label = config.products.colorMappings[label]
         }
       }
       if (label.indexOf('/') >= 0) label = label.replace('/', ',') // to be honest - this is a hack for colors like "ink/white"
@@ -35,8 +32,7 @@ export default {
         return 'background-color: ' + label
       }
     }
-  },
-  mixins: [Filter]
+  }
 }
 </script>
 

@@ -1,24 +1,22 @@
 <template>
   <div
     :class="{'filter-label': true}"
-    v-if="showFilterOption"
   >
     <span
-      :class="{'active': active, 'filter-label': true}"
-      @click="switchFilter(id, label)"
-      :aria-label="$t('Select ') + label"
+      :class="{'active': isActive, 'filter-label': true}"
+      @click="$emit('change', variant)"
+      :aria-label="$t('Select ' + variant.label)"
     >
-      {{ label }}
+      {{ variant.label }}
     </span>
-    <span v-if="showProductsLeftCounter" class="product-counter">{{ productsLeftCounter }}</span>
   </div>
 </template>
 
 <script>
-import Filter from './Filter'
+import filterMixin from 'src/modules/vsf-layered-navigation/mixins/filterMixin'
 
 export default {
-  mixins: [Filter]
+  mixins: [filterMixin]
 }
 </script>
 

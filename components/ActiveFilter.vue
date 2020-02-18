@@ -1,15 +1,15 @@
 <template>
   <div>
     <span
-      v-for="(attribute, index) in attributes"
+      v-for="(variant, index) in attributes"
       :key="index"
       class="active active-filter-label"
-      :aria-label="$t('Select ' + attribute.label)"
+      :aria-label="$t('Select ' + variant.label)"
     >
-      {{ attribute.label }}
+      {{ getVariantInfo(variant) }}
       <i
         class="material-icons"
-        @click="removeFilter(attribute)">
+        @click="$emit('changeFilter', variant)">
         close
       </i>
     </span>
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import config from 'config'
 
 export default {
   name: 'ActiveFilter',
@@ -27,15 +28,17 @@ export default {
       default: () => false
     }
   },
-  data () {
-    return {
-      context: 'category',
-      active: false
-    }
-  },
   methods: {
-    removeFilter (attribute) {
-      this.$bus.$emit('filter-changed-' + this.context, { ...attribute, remove: true })
+    getVariantInfo (variant) {
+      let variant_label
+      if (variant.attribute_code === 'price') {
+        const currencySign = config.i18n.currencySign
+        const price_range = variant[Object.keys(variant)[0]].split('-')
+        variant_label = currencySign + " " + price_range[0] + " - " + currencySign + " " + price_range[1]
+      } else {
+        variant_label = variant.label
+      }
+      return variant_label
     }
   }
 }

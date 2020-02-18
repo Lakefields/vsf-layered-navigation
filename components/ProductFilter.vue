@@ -1,49 +1,43 @@
 <template>
-  <div
-    class="product-filter"
-    v-if="showFilter()"
-  >
+  <div class="product-filter">
     <h4>{{ $t(filterIndex + '_filter') }}</h4>
-    <div v-if="filterIndex === 'color'">
+
+    <div v-if="filterIndex==='color'">
       <color-selector
         context="category"
-        :attribute_code="filter.attribute_code"
         code="color"
-        v-for="(color, index) in filter.options"
+        v-for="(color, index) in filter"
         :key="index"
-        :id="color.id"
-        :label="color.label"
+        :variant="color"
+        :selected-filters="selectedFilters"
+        @change="$emit('changeFilter', $event)"
       />
     </div>
-    <div v-else-if="filter.frontend_input==='price'">
+    <div v-else-if="filterIndex==='price'">
       <price-slider
         context="category"
         code="price"
         id="price"
-        :price-range="filter.options"
+        :price-range="filter"
         content="Price "
         label="Price Label"
+        :selected-filters="selectedFilters"
+        @change="$emit('changeFilter', $event)"
       />
     </div>
-    <div
-      v-else-if="isSelector(filter.frontend_input)"
+    <div v-else class="filter-option"
       :class="{'filter-options': showFilterExpander(), 'filter-expanded': filterExpand}"
-      :style="{'max-height': setMaxHeight }"      
+      :style="{'max-height': setMaxHeight }" 
     >
-      <div
-        class="filter-option"
-        v-for="(filterOption, index) in filter.options"
+      <selector
+        context="category"
+        :code="filterIndex"
+        v-for="(option, index) in filter"
         :key="index"
-      >
-        <selector
-          context="category"
-          :filter-type="filter.frontend_input"
-          :attribute_code="filter.attribute_code"
-          :code="filter.attribute_code"
-          :id="filterOption.id"
-          :label="filterOption.label"
-        />
-      </div>
+        :variant="option"
+        :selected-filters="selectedFilters"
+        @change="$emit('changeFilter', $event)"
+      />
       <div class="filter-expander" v-show="showFilterExpander()">
         <span
           class="filter-expand"
@@ -65,7 +59,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import rootStore from '@vue-storefront/core/store'
-import GenericSelector from './FilterTypes/GenericSelector'
 import ColorSelector from './FilterTypes/ColorSelector'
 import Selector from './FilterTypes/Selector'
 import PriceSlider from './FilterTypes/PriceSlider'
@@ -80,8 +73,12 @@ export default {
       required: true
     },
     filter: {
-      type: Object,
+      type: Array,
       required: true
+    },
+    selectedFilters: {
+      type: Object,
+      default: () => ({})
     },
     limit: {
       type: Number,
@@ -91,41 +88,23 @@ export default {
   },
     data () {
     return {
-      selectorFilterTypes: ['select', 'multiselect'],
-      filterExpand: false,
-      availableFilterOptions: this.filter.options.length
+      filterExpand: false
     }
   },
   components: {
-    GenericSelector,
     ColorSelector,
     Selector,
     PriceSlider
-  },
-  beforeMount () {
-    this.$bus.$on('product-list-updated', this.onAfterProductListUpdated)
-  },
-  beforeDestroy () {
-    this.$bus.$off('product-list-updated', this.onAfterProductListUpdated)
   },
   computed: {
     ...mapGetters(
       'category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery', 'getAvailableCategoryFilters']
     ),
+    availableFilterOptions () {
+      return this.filter.length
+    },
     filterOptionElHeight () {
       return this.$store.state.config.layeredNavigation.filterOptionElHeight
-    },
-    category () {
-      return this.getCurrentCategory
-    },
-    currentProductList () {
-      return this.$store.getters['product/list']
-    },
-    productCount () {
-      return this.currentProductList.length
-    },
-    activeFilters () {
-      return this.getActiveCategoryFilters
     },
     remainingFilterOptions () {
       return this.availableFilterOptions - this.limit
@@ -138,43 +117,11 @@ export default {
     }
   },
   methods: {
-    isSelector (filterType) {
-      return this.selectorFilterTypes.includes(filterType)
-    },
-    showFilter () {
-      return this.availableFilterOptions > 0
-    },
     showFilterExpander () {
       return this.availableFilterOptions > this.limit
     },
     filterExpander () {
       this.filterExpand = !this.filterExpand
-    },
-    hasFilterOptionYield(filterOption) {
-      let attributeCode = this.filter.attribute_code
-      let countProducts = this.currentProductList.filter(product => {
-        if (product[attributeCode] === null) {
-          return false
-        }
-        return (typeof product[attributeCode] === 'object') ? product[attributeCode].indexOf(filterOption) !== -1 : product[attributeCode] === parseInt(filterOption)
-      })
-      return this.isFilterOptionSelected(filterOption) || (countProducts.length > 0 && countProducts.length < this.currentProductList.length)
-    },
-    isFilterOptionSelected (filterOption) {
-      let attributeCode = this.filter.attribute_code
-      if (!this.activeFilters.hasOwnProperty(attributeCode)) {
-        return false
-      } else {
-        let activeFilters = this.activeFilters[attributeCode]
-        return activeFilters.filter(option => option.id === filterOption).length !== 0
-      }
-    },
-    onAfterProductListUpdated () {
-      let attributeCode = this.filter.attribute_code
-      if(attributeCode !== "price"){
-        let filterOptions = this.filter.options.filter(filterOption => { return this.hasFilterOptionYield(filterOption.id) })
-        this.availableFilterOptions = filterOptions.length
-      }
     }
   }
 }

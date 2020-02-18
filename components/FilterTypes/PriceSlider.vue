@@ -18,6 +18,7 @@
 <script>
 import NoSSR from 'vue-no-ssr'
 import isEqual from 'lodash-es/isEqual'
+import { products } from 'config'
 
 const PriceSliderComponents = {}
 
@@ -52,14 +53,21 @@ export default {
     }
   },
   beforeMount () {
-    this.$bus.$on('filter-reset', this.resetPriceSlider)
+    this.$bus.$on('reset-filters', this.resetPriceSlider)
     this.$bus.$on('reset-price-slider', this.resetPriceSlider)
-    this.$bus.$on('category-after-load', this.resetPriceSlider)
   },
   beforeDestroy () {
-    this.$bus.$off('filter-reset', this.resetPriceSlider)
+    this.$bus.$off('reset-filters', this.resetPriceSlider)
     this.$bus.$off('reset-price-slider', this.resetPriceSlider)
-    this.$bus.$off('category-after-load', this.resetPriceSlider)
+  },
+  mounted () {
+    const routeQueryData = this.$store.state.route[products.routerFiltersSource]
+    if(routeQueryData.hasOwnProperty('price')){
+      const routePriceRange = routeQueryData['price'].split('-')
+      if(!isEqual(this.value, routePriceRange)){
+        this.value = routePriceRange
+      }
+    }
   },
   data () {
     return {
@@ -72,7 +80,7 @@ export default {
   },
   computed: {
     priceSliderOptions () {
-      return {...this.priceSliderConfig, ...this.tooltipContent}
+      return {...this.priceSliderConfig, ...this.tooltipContent, silent: true}
     },
     tooltipContent () {
       return { formatter: this.currencySign + ' {value}' }
@@ -84,21 +92,32 @@ export default {
       return this.priceRange[1]
     }
   },
+  watch: {
+    '$route': 'validateRoute'
+  },
   methods: {
     setPrice: function (e) {
       let val = e.val
-      let from = val[0]
-      let to = val[1]
-      let id = val[1]
-      this.remove = isEqual(val, this.priceRange)
-      this.switchFilter(id, from, to)
+      let from = parseInt(val[0])
+      let to = parseInt(val[1])
+      let id = from.toFixed(1) + "-" + to.toFixed(1)
+      this.remove = isEqual([from, to], this.priceRange)
+      this.switchFilter( {id: id, type: this.code, from: from, to: to, remove: this.remove} )
     },
-    switchFilter (id, from, to) {
-      this.$bus.$emit('filter-changed-' + this.context, { attribute_code: this.code, id: id, from: from, to: to, label: this.currencySign + ' ' + from + ' - ' + this.currencySign + ' ' + to, remove: this.remove })
+    switchFilter (variant) {
+      this.$emit('change', variant)
     },
     resetPriceSlider () {
       if (this.$refs.priceSlider) {
         this.$refs.priceSlider.setValue(this.priceRange)
+      }
+    },
+    validateRoute () {
+      const routeQueryData = this.$store.state.route[products.routerFiltersSource]
+      if (this.$refs.priceSlider && !routeQueryData.hasOwnProperty('price')) {
+        this.$nextTick(() => {
+          this.$refs.priceSlider.setValue(this.priceRange)
+        })
       }
     }
   },

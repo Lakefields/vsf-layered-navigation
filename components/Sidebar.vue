@@ -21,20 +21,18 @@
         :filter-index="filterIndex"
         :filter="filter"
         :limit="filterOptionDisplayLimit"
+        :selected-filters="getCurrentFilters"
+        @changeFilter="changeFilter"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { buildFilterProductsQueryByFilterArray } from 'src/modules/vsf-layered-navigation/helpers/productsQueryByFilter'
+import ProductFilter from 'src/modules/vsf-layered-navigation/components/ProductFilter'
 import pickBy from 'lodash-es/pickBy'
-import map from 'lodash-es/map'
-import ProductFilter from './ProductFilter'
 
 export default {
-  name: 'CategorySidebar',
   components: {
     ProductFilter
   },
@@ -44,56 +42,29 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      selectorFilterTypes: ['select', 'multiselect'],
-      filterExpand: false
-    }
-  },
-  mounted () {
-    this.$bus.$emit('product-list-updated')
-    this.resetAllFilters()
-  },
   computed: {
-    ...mapGetters('category', ['getCurrentCategory', 'getActiveCategoryFilters', 'getCurrentCategoryProductQuery']),
-    category () {
-      return this.getCurrentCategory
+    hasActiveFilters () {
+      return this.$store.getters['category-next/hasActiveFilters']
+    },
+    getCurrentFilters () {
+      return this.$store.getters['category-next/getCurrentFilters']
     },
     availableFilters () {
-      return pickBy(this.filters, (filter) => { return (filter.options.length) })
-    },
-    currentProductList () {
-      return this.$store.getters['product/list']
-    },
-    activeFilters () {
-      return this.getActiveCategoryFilters
+      return pickBy(this.filters, (filter, filterType) => { return (filter.length && !this.$store.getters['category-next/getSystemFilterNames'].includes(filterType)) })
     },
     filterOptionDisplayLimit () {
       return this.$store.state.config.layeredNavigation.filterOptionsDisplayLimit
-    },
-    hasActiveFilters () {
-      return Object.keys(this.activeFilters).length !== 0
-    },
-    activeFiltersCount () {
-      return pickBy(this.activeFilters, (activeFilter) => { return (activeFilter.length) })
     }
   },
   methods: {
+    resetAllFilters () {
+      this.$store.dispatch('category-next/resetSearchFilters')
+    },
+    changeFilter (variant) {
+      this.$emit('changeFilter', variant)
+    },
     sortById (filters) {
       return [...filters].sort((a, b) => { return a.id - b.id })
-    },
-    resetAllFilters () {
-      if (this.hasActiveFilters) {
-        this.$bus.$emit('filter-reset')
-        this.$store.dispatch('category/resetFilters')
-        this.$store.dispatch('category/searchProductQuery', {})
-        this.$store.dispatch('category/mergeSearchOptions', {
-          searchProductQuery: buildFilterProductsQueryByFilterArray(this.category, this.activeFilters)
-        })
-        this.$store.dispatch('category/products', this.getCurrentCategoryProductQuery).then((res) => {
-          this.$bus.$emit('product-list-updated')
-        })
-      }
     }
   }
 }
@@ -112,6 +83,10 @@ export default {
         margin-top: 20px;
       }
     }
+  }
+
+  &__inline-selecors {
+    display: flex;
   }
 }
 </style>
